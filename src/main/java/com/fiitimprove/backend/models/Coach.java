@@ -1,9 +1,8 @@
 package com.fiitimprove.backend.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,4 +26,8 @@ public class Coach extends User {
 
     @Column(name = "works_in_field_since")
     private LocalDate worksInFieldSince;
+
+    @OneToOne(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private Gym gym;
 }

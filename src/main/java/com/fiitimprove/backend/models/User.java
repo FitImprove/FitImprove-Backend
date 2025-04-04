@@ -1,5 +1,6 @@
 package com.fiitimprove.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,6 +57,7 @@ public abstract class User {
     private String selfInformation;
 
     @OneToOne(mappedBy = "user")
+    @JsonManagedReference
     private Settings settings;
     public enum Gender {
         MALE, FEMALE

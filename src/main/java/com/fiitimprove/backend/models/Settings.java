@@ -1,5 +1,6 @@
 package com.fiitimprove.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +20,7 @@ public class Settings {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     @NotNull(message = "User cannot be null")
+    @JsonBackReference
     private User user;
 
     @Enumerated(EnumType.STRING)
