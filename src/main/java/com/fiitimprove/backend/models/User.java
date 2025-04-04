@@ -55,6 +55,8 @@ public abstract class User {
     @Column(name = "self_information")
     private String selfInformation;
 
+    @OneToOne(mappedBy = "user")
+    private Settings settings;
     public enum Gender {
         MALE, FEMALE
     }
