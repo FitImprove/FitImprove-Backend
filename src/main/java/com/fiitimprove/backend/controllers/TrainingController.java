@@ -20,7 +20,7 @@ public class TrainingController {
     public ResponseEntity<Training> createTraining(
             @RequestParam Long coachId,
             @RequestBody Training training,
-            @RequestParam(required = false) List<Long> invitedUserIds) {
+            @RequestParam(required = false) List<Long> invitedUserIds) throws Exception {
         Training createdTraining = trainingService.createTraining(coachId, training, invitedUserIds);
         return ResponseEntity.ok(createdTraining);
     }

@@ -9,6 +9,8 @@ import com.fiitimprove.backend.repositories.RegularUserRepository;
 import com.fiitimprove.backend.repositories.TrainingRepository;
 import com.fiitimprove.backend.repositories.TrainingUserRepository;
 
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,11 @@ public class TrainingService {
     @Autowired
     private TrainingUserRepository trainingUserRepository;
 
-    public Training createTraining(Long coachId, Training training, List<Long> invitedUserIds) {
+    @Autowired
+    private TrainingUserService trainingUserService;
+
+    @Transactional
+    public Training createTraining(Long coachId, Training training, List<Long> invitedUserIds) throws Exception {
         Coach coach = coachRepository.findById(coachId)
                 .orElseThrow(() -> new RuntimeException("Coach not found with id: " + coachId));
         training.setCoach(coach);
@@ -39,11 +45,7 @@ public class TrainingService {
             for (Long userId : invitedUserIds) {
                 RegularUser user = regularUserRepository.findById(userId)
                         .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-                TrainingUser trainingUser = new TrainingUser();
-                trainingUser.setTraining(savedTraining);
-                trainingUser.setUser(user);
-                trainingUser.setStatus(TrainingUser.Status.INVITED);
-                trainingUserRepository.save(trainingUser);
+                trainingUserService.createUnsafe(savedTraining, user, TrainingUser.Status.INVITED);
             }
         }
 
