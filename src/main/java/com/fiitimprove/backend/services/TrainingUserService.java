@@ -65,27 +65,41 @@ public class TrainingUserService {
         return reservation; 
     }
 
+    private void acceptInvitationUnsafe(TrainingUser invitation) {
+        invitation.setStatus(Status.AGREED);
+        invitation.setBookedAt(LocalDateTime.now());
+        trainingUserRepository.save(invitation);
+    }
+
     public TrainingUser acceptInvitation(Long trainingId, Long userId) throws Exception {
         var reservations = trainingUserRepository.findByTrainingIdAndUserIdAndStatusIn(trainingId, userId, Arrays.asList(Status.INVITED));
         if (reservations.isEmpty())
             throw new Exception("User does not have an invitation in provided training");
-        TrainingUser reservation = reservations.get(0);
-        reservation.setStatus(Status.AGREED);
-
-        trainingUserRepository.save(reservation);
-        return reservation;
+        
+        TrainingUser invitation = reservations.get(0);
+        this.acceptInvitationUnsafe(invitation);
+        return invitation;
     }
 
-    public TrainingUser createUnsafe(Training training, RegularUser user, Status st) throws Exception {
+    public TrainingUser createUnsafe(Training training, RegularUser user, Status st) {
         TrainingUser tu = new TrainingUser();
         tu.setTraining(training);
         tu.setUser(user);
         tu.setStatus(st);
-        tu.setBookedAt(LocalDateTime.now());
-        trainingUserRepository.save(tu);
 
-        training.setFreeSlots(training.getFreeSlots()-1);
-        trainingRepository.save(training);
+        switch (st) {
+            case Status.AGREED:
+                tu.setBookedAt(LocalDateTime.now());
+                training.setFreeSlots(training.getFreeSlots()-1);
+                trainingRepository.save(training);
+                break;
+            case Status.INVITED:
+                tu.setInvitedAt(LocalDateTime.now());
+                break;
+            default: break;
+        }
+
+        trainingUserRepository.save(tu);
         return tu;
     }
 
@@ -95,7 +109,7 @@ public class TrainingUserService {
 
         if (training.isCanceled()) 
             throw new IllegalStateException("Cannot enroll in a canceled training");
-        if (training.getFreeSlots() <= 0) 
+        if (training.getFreeSlots() <= 0 && st == Status.AGREED) 
             throw new IllegalStateException("No free slots available");
         if (training.getTimeDateAndTime().isBefore(LocalDateTime.now())) 
             throw new IllegalStateException("Can not enroll in training that already started/ended");
@@ -107,9 +121,9 @@ public class TrainingUserService {
             TrainingUser elem = existing.get(0);
             if (elem.getStatus() == Status.AGREED) 
                 throw new Exception("User is already enrolled in this training");
-            
-            elem.setStatus(Status.AGREED);    
-            trainingUserRepository.save(elem);
+            if (st == Status.INVITED) 
+                throw new Exception("User already has invitation for provided training");
+            this.acceptInvitationUnsafe(elem);
             return elem;
         }
 

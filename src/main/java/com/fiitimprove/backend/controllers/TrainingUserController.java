@@ -37,7 +37,7 @@ public class TrainingUserController {
         return ResponseEntity.ok(tu);
     }
 
-    @PostMapping("/cancelTraining")
+    @PostMapping("/cancel")
     public ResponseEntity<TrainingUser> cancelTraining(@Valid @RequestBody EnrollUserRequest request) throws Exception {
         TrainingUser tu = trainingUserService.cancelTraining(request.getTrainingId(), request.getUserId());
         return ResponseEntity.ok(tu);
