@@ -3,6 +3,7 @@ package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.models.User;
 import com.fiitimprove.backend.services.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,4 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.findAll());
     }
-
-
 }

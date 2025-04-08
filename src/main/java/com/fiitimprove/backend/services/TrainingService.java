@@ -8,10 +8,10 @@ import com.fiitimprove.backend.repositories.CoachRepository;
 import com.fiitimprove.backend.repositories.RegularUserRepository;
 import com.fiitimprove.backend.repositories.TrainingRepository;
 import com.fiitimprove.backend.repositories.TrainingUserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -53,6 +53,4 @@ public class TrainingService {
     public List<Training> getTrainingsByCoachId(Long coachId) {
         return trainingRepository.findByCoachId(coachId);
     }
-
-
 }

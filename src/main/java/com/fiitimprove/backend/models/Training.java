@@ -32,7 +32,6 @@ public class Training {
     @Column(name = "free_slots")
     private int freeSlots;
 
-
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

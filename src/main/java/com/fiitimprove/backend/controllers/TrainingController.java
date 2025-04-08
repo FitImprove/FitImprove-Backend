@@ -1,8 +1,8 @@
 package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.models.Training;
-import com.fiitimprove.backend.models.TrainingUser;
 import com.fiitimprove.backend.services.TrainingService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +30,4 @@ public class TrainingController {
         List<Training> trainings = trainingService.getTrainingsByCoachId(coachId);
         return ResponseEntity.ok(trainings);
     }
-
-
 }
