@@ -18,10 +18,16 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private SettingsService settingsService;
+    private boolean emailExists(String email) {
+        return  userRepository.findByEmail(email).isPresent();
+    }
     public User signup(User user) {
         System.out.println(user.getRole() + user.getName());
         if (!(user instanceof Coach) && !(user instanceof RegularUser)) {
             throw new IllegalArgumentException("User must be of type Coach or RegularUser");
+        }
+        if (emailExists(user.getEmail())) {
+            throw new IllegalArgumentException("This email has already exist");
         }
         User u = userRepository.save(user);
         Settings settings = new Settings();
