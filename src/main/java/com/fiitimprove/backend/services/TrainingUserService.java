@@ -1,5 +1,7 @@
 package com.fiitimprove.backend.services;
 
+import com.fiitimprove.backend.exceptions.IncorrectDataException;
+import com.fiitimprove.backend.exceptions.ResourceNotFoundException;
 import com.fiitimprove.backend.models.RegularUser;
 import com.fiitimprove.backend.models.Training;
 import com.fiitimprove.backend.models.TrainingUser;
@@ -7,8 +9,6 @@ import com.fiitimprove.backend.models.TrainingUser.Status;
 import com.fiitimprove.backend.repositories.TrainingRepository;
 import com.fiitimprove.backend.repositories.TrainingUserRepository;
 import com.fiitimprove.backend.repositories.RegularUserRepository;
-
-import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,9 +35,9 @@ public class TrainingUserService {
 
     public TrainingUser enrollUserInTraining(Long trainingId, Long userId) throws Exception {
         Training training = trainingRepository.findById(trainingId)
-            .orElseThrow(() -> new EntityNotFoundException("Training not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Training not found"));
         RegularUser user = regularUserRepository.findById(userId)
-            .orElseThrow(() -> new EntityNotFoundException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
         return this.create(training, user, Status.AGREED);
     }
@@ -45,10 +45,17 @@ public class TrainingUserService {
     public TrainingUser cancelTraining(Long trainingId, Long userId) throws Exception {
         var reservations = trainingUserRepository.findByTrainingIdAndUserIdAndStatusIn(trainingId, userId, Arrays.asList(Status.AGREED));
         if (reservations.isEmpty())
-            throw new Exception("User does not have an reservation in provided training");
+            throw new ResourceNotFoundException("User does not have an reservation in provided training");
         TrainingUser reservation = reservations.get(0);
         assert(reservation.getStatus() == Status.AGREED);
         reservation.setStatus(Status.CANCELED);
+        reservation.setCanceledAt(LocalDateTime.now());
+
+        Training tr = reservation.getTraining();
+        if (tr.getForType() == Training.ForType.EVERYONE || reservation.getInvitedAt() == null) {
+            tr.setFreeSlots(tr.getFreeSlots() + 1);
+            trainingRepository.save(tr);
+        }
         
         trainingUserRepository.save(reservation);
         return reservation;
@@ -57,11 +64,16 @@ public class TrainingUserService {
     public TrainingUser denyInvitation(Long trainingId, Long userId) throws Exception {
         var reservations = trainingUserRepository.findByTrainingIdAndUserIdAndStatusIn(trainingId, userId, Arrays.asList(Status.INVITED));
         if (reservations.isEmpty())
-            throw new Exception("User does not have an invitation in provided training");
+            throw new IncorrectDataException("User does not have an invitation in provided training");
         TrainingUser reservation = reservations.get(0);
         reservation.setStatus(Status.DENIED);
-
         trainingUserRepository.save(reservation);
+
+        Training tr = reservation.getTraining();
+        if (tr.getForType() == Training.ForType.EVERYONE) {
+            tr.setFreeSlots(tr.getFreeSlots() + 1);
+            trainingRepository.save(tr);
+        }
         return reservation; 
     }
 
@@ -74,7 +86,7 @@ public class TrainingUserService {
     public TrainingUser acceptInvitation(Long trainingId, Long userId) throws Exception {
         var reservations = trainingUserRepository.findByTrainingIdAndUserIdAndStatusIn(trainingId, userId, Arrays.asList(Status.INVITED));
         if (reservations.isEmpty())
-            throw new Exception("User does not have an invitation in provided training");
+            throw new IncorrectDataException("User does not have an invitation in provided training");
         
         TrainingUser invitation = reservations.get(0);
         this.acceptInvitationUnsafe(invitation);
@@ -105,7 +117,7 @@ public class TrainingUserService {
 
     public TrainingUser create(Training training, RegularUser user, Status st) throws Exception {
         if (st != Status.INVITED && st != Status.AGREED) 
-            throw new Exception(String.format("Can not create training that is not INVITED or AGREED, provided: %s", st.name()));
+            throw new IncorrectDataException(String.format("Can not create training that is not INVITED or AGREED, provided: %s", st.name()));
 
         if (training.isCanceled()) 
             throw new IllegalStateException("Cannot enroll in a canceled training");
@@ -120,9 +132,9 @@ public class TrainingUserService {
                 throw new Exception("Data damage, user is enrolled/invited in the same training twice");
             TrainingUser elem = existing.get(0);
             if (elem.getStatus() == Status.AGREED) 
-                throw new Exception("User is already enrolled in this training");
+                throw new IncorrectDataException("User is already enrolled in this training");
             if (st == Status.INVITED) 
-                throw new Exception("User already has invitation for provided training");
+                throw new IncorrectDataException("User already has invitation for provided training");
             this.acceptInvitationUnsafe(elem);
             return elem;
         }

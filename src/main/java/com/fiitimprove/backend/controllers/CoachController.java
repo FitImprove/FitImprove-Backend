@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/coaches")
 public class CoachController {
-
     @Autowired
     private CoachService coachService;
     @PostMapping("/create")
@@ -22,5 +21,4 @@ public class CoachController {
     public ResponseEntity<List<Coach>> getAllCoaches() {
         return ResponseEntity.ok(coachService.findAllCoaches());
     }
-
 }

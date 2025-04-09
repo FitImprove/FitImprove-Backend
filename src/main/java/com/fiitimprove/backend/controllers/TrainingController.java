@@ -1,7 +1,10 @@
 package com.fiitimprove.backend.controllers;
 
+import com.fiitimprove.backend.dto.TrainingId;
 import com.fiitimprove.backend.models.Training;
 import com.fiitimprove.backend.services.TrainingService;
+
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,5 +32,11 @@ public class TrainingController {
     public ResponseEntity<List<Training>> getTrainingsByCoachId(@PathVariable Long coachId) {
         List<Training> trainings = trainingService.getTrainingsByCoachId(coachId);
         return ResponseEntity.ok(trainings);
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<Training> cancelTraining(@Valid @RequestBody TrainingId trainingId) throws Exception {
+        Training tr = trainingService.cancel(trainingId.getTrainingId());
+        return ResponseEntity.ok(tr);
     }
 }

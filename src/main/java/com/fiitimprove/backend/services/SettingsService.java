@@ -32,5 +32,4 @@ public class SettingsService {
     public List<Settings> findAll() {
         return settingsRepository.findAll();
     }
-
 }

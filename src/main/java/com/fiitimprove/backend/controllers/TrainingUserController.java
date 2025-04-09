@@ -1,6 +1,7 @@
 package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.dto.EnrollUserRequest;
+import com.fiitimprove.backend.dto.TrainingUserDTO;
 import com.fiitimprove.backend.models.TrainingUser;
 import com.fiitimprove.backend.services.TrainingUserService;
 
@@ -20,32 +21,32 @@ public class TrainingUserController {
     private TrainingUserService trainingUserService;
 
     @PostMapping("/enroll")
-    public ResponseEntity<TrainingUser> enrollInTraining(@Valid @RequestBody EnrollUserRequest request) throws Exception {
+    public ResponseEntity<TrainingUserDTO> enrollInTraining(@Valid @RequestBody EnrollUserRequest request) throws Exception {
         TrainingUser tu = trainingUserService.enrollUserInTraining(request.getTrainingId(), request.getUserId());
-        return ResponseEntity.ok(tu);
+        return ResponseEntity.ok(TrainingUserDTO.create(tu));
     }
 
     @PostMapping("/denyInvitation")
-    public ResponseEntity<TrainingUser> denyInvitation(@Valid @RequestBody EnrollUserRequest request) throws Exception {
+    public ResponseEntity<TrainingUserDTO> denyInvitation(@Valid @RequestBody EnrollUserRequest request) throws Exception {
         TrainingUser tu = trainingUserService.denyInvitation(request.getTrainingId(), request.getUserId());
-        return ResponseEntity.ok(tu);
+        return ResponseEntity.ok(TrainingUserDTO.create(tu));
     }
 
     @PostMapping("/acceptInvitation")
-    public ResponseEntity<TrainingUser> acceptInvitation(@Valid @RequestBody EnrollUserRequest request) throws Exception {
+    public ResponseEntity<TrainingUserDTO> acceptInvitation(@Valid @RequestBody EnrollUserRequest request) throws Exception {
         TrainingUser tu = trainingUserService.acceptInvitation(request.getTrainingId(), request.getUserId());
-        return ResponseEntity.ok(tu);
+        return ResponseEntity.ok(TrainingUserDTO.create(tu));
     }
 
     @PostMapping("/cancel")
-    public ResponseEntity<TrainingUser> cancelTraining(@Valid @RequestBody EnrollUserRequest request) throws Exception {
+    public ResponseEntity<TrainingUserDTO> cancelTraining(@Valid @RequestBody EnrollUserRequest request) throws Exception {
         TrainingUser tu = trainingUserService.cancelTraining(request.getTrainingId(), request.getUserId());
-        return ResponseEntity.ok(tu);
+        return ResponseEntity.ok(TrainingUserDTO.create(tu));
     }
 
     @GetMapping("/enrolled/all/{user_id}")
-    public ResponseEntity<List<TrainingUser>> getAllEntoledTrainings(@PathVariable("user_id") Long userId)  throws Exception {
-        return ResponseEntity.ok(
-            trainingUserService.getAllEntoledTrainings(userId) );
+    public ResponseEntity<List<TrainingUserDTO>> getAllEntoledTrainings(@PathVariable("user_id") Long userId)  throws Exception {
+        List<TrainingUser> trs = trainingUserService.getAllEntoledTrainings(userId);
+        return ResponseEntity.ok( TrainingUserDTO.convertList(trs) );
     }
 }

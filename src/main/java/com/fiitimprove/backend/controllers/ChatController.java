@@ -29,6 +29,4 @@ public class ChatController {
     public ResponseEntity<List<Chat>> getChatsByRegularUserId(@PathVariable Long regularUserId) {
         return ResponseEntity.ok(chatService.findChatsByRegularUserId(regularUserId));
     }
-
-
 }

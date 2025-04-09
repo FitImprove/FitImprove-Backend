@@ -2,6 +2,7 @@ package com.fiitimprove.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +31,7 @@ public class Training {
     private LocalDateTime timeDateAndTime;
 
     @Column(name = "free_slots")
+    @Min(value = 0, message = "FreeSlots can not be negative")
     private int freeSlots;
 
     @Column(name = "created_at", nullable = false, updatable = false)
