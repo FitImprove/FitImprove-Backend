@@ -19,7 +19,7 @@ public class CoachService {
 
     public Coach createCoach(Coach coach) {
         coach.setJoinedAt(java.time.LocalDate.now());
-        coach.setVerified(false);
+
         Coach savedCoach = coachRepository.save(coach);
         Settings settings = new Settings();
         settings.setUser(savedCoach);

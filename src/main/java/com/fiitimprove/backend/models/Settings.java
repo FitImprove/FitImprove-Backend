@@ -5,12 +5,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "settings")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Settings {
 
     @Id

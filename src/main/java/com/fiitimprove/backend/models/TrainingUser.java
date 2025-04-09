@@ -5,6 +5,7 @@ import com.fiitimprove.backend.repositories.TrainingUserRepository;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 @Table(name = "training_users")
 @Getter
 @Setter
+@NoArgsConstructor
 public class TrainingUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
