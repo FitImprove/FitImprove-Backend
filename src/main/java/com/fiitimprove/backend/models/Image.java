@@ -1,5 +1,7 @@
 package com.fiitimprove.backend.models;
 
+import java.nio.file.Paths;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -10,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Image {
-    public static final String STORAGE_PATH = "D:\\University\\MTAA\\FitImprove-Backend\\images";
+    public static final String STORAGE_PATH = Paths.get("imagesStorage").toAbsolutePath().toString();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

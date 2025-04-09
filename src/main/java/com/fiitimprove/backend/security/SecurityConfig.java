@@ -37,8 +37,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authz -> authz
                                 .requestMatchers(
-                                        "/api/users/signup"
-
+                                        "/api/users/signup",
+                                        "/api/password/**",
+                                        "/api/images/get/{filename}",
+                                        "/api/images/files/{userId}",
+                                        "/api/images/descriptors/{userId}"
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 );
