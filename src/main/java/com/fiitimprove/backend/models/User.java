@@ -1,12 +1,16 @@
 package com.fiitimprove.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -15,8 +19,18 @@ import java.time.LocalDate;
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "role"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Coach.class, name = "COACH"),
+        @JsonSubTypes.Type(value = RegularUser.class, name = "USER")
+})
 @Getter
 @Setter
+@NoArgsConstructor
 public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,11 +81,9 @@ public abstract class User {
     @Column(name = "joined_at", updatable = false)
     private LocalDate joinedAt;
 
-    @Column(name = "is_verified")
-    private boolean isVerified;
-
     @Column(name = "role", insertable = false, updatable = false)
     @Pattern(regexp = "^(USER|COACH)$", message = "Field validator allows only role states: {USER | COACH}")
+    @JsonIgnore
     private String role;
 
     @Column(name = "self_information")

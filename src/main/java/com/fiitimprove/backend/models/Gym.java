@@ -6,12 +6,14 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "gyms")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Gym {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

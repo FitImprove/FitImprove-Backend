@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "training_users")
 @Getter
 @Setter
+@NoArgsConstructor
 public class TrainingUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

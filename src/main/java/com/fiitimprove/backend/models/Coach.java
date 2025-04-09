@@ -3,6 +3,7 @@ package com.fiitimprove.backend.models;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.util.List;
 @DiscriminatorValue("COACH")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Coach extends User {
 
     @ElementCollection

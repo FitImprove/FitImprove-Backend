@@ -19,7 +19,6 @@ public class RegularUserService {
     private SettingsService settingsService;
     public RegularUser createRegularUser(RegularUser regularUser) {
         regularUser.setJoinedAt(LocalDate.now());
-        regularUser.setVerified(false);
         RegularUser savedUser = regularUserRepository.save(regularUser);
 
         Settings settings = new Settings();
