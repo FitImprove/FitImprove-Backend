@@ -30,7 +30,10 @@ public class SecurityConfig {
 
         return new InMemoryUserDetailsManager(user);
     }
-
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -41,7 +44,8 @@ public class SecurityConfig {
                                         "/api/password/**",
                                         "/api/images/get/{filename}",
                                         "/api/images/files/{userId}",
-                                        "/api/images/descriptors/{userId}"
+                                        "/api/images/descriptors/{userId}",
+                                        "/api/users/signIn"
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 );

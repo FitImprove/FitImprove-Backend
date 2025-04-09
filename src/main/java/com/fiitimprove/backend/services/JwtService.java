@@ -1,6 +1,7 @@
 package com.fiitimprove.backend.services;
 
 import com.fiitimprove.backend.dto.AuthentificationResponse;
+import com.fiitimprove.backend.dto.SignInRequest;
 import com.fiitimprove.backend.models.User;
 import com.fiitimprove.backend.repositories.UserRepository;
 import io.jsonwebtoken.*;
@@ -22,6 +23,10 @@ import static io.jsonwebtoken.Jwts.*;
 public class JwtService {
     @Value("${jwt.secret}")
     private String secretKey;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private  PasswordEncoder passwordEncoder;
 
     public AuthentificationResponse signUp(User user) {
         String accessToken = generateAccessToken(user.getId(), user.getEmail());
@@ -37,15 +42,13 @@ public class JwtService {
                 .signWith(key)
                 .compact();
     }
-
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    public AuthentificationResponse signIn(SignInRequest signInRequest) {
+        User user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("User with this email is not exist"));
+        if (!passwordEncoder.matches(signInRequest.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Password incorrect");
+        }
+        String accessToken = generateAccessToken(user.getId(), user.getEmail());
+        return new AuthentificationResponse(user.getId(), user.getName() ,accessToken);
     }
 
-    public Long extractUserId(String token) {
-        JwtParserBuilder parserBuilder = Jwts.parser().setSigningKey(getSigningKey());
-        JwtParser parser = parserBuilder.build();
-        Claims claims = parser.parseClaimsJws(token).getPayload();
-        return Long.parseLong(claims.getSubject());
-    }
 }

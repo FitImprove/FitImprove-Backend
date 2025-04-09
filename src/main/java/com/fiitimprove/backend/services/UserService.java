@@ -6,6 +6,7 @@ import com.fiitimprove.backend.models.Settings;
 import com.fiitimprove.backend.models.User;
 import com.fiitimprove.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private SettingsService settingsService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     private boolean emailExists(String email) {
         return  userRepository.findByEmail(email).isPresent();
     }
@@ -28,6 +31,7 @@ public class UserService {
         if (emailExists(user.getEmail())) {
             throw new IllegalArgumentException("This email has already exist");
         }
+        user.hashPassword(passwordEncoder);
         User u = userRepository.save(user);
         Settings settings = new Settings();
         settings.setUser(u);

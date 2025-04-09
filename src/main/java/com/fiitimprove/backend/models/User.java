@@ -12,6 +12,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
@@ -61,8 +63,8 @@ public abstract class User {
 
     @Column(nullable = false)
     @NotNull(message = "password can not be null")
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{6,32}$", message = "Password has to have lower and upper case en letter and some digit.")
-    // @Pattern(regexp = "^(?!.*[<>\"'&;])$", message = "Password cannot contain malicious characters such as <, >, \", ', &, or ;.")    
+   // @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{6,32}$", message = "Password has to have lower and upper case en letter and some digit.")
+    // @Pattern(regexp = "^(?!.*[<>\"'&;])$", message = "Password cannot contain malicious characters such as <, >, \", ', &, or ;.")
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -80,6 +82,19 @@ public abstract class User {
 
     @Column(name = "joined_at", updatable = false)
     private LocalDate joinedAt;
+    @PrePersist
+    protected void onCreate() {
+        joinedAt = LocalDate.now();
+    }
+    public void hashPassword(PasswordEncoder passwordEncoder) {
+        if (password == null || password.length() < 6 ||
+                !password.matches(".*[A-Z].*") ||
+                !password.matches(".*[a-z].*") ||
+                !password.matches(".*\\d.*")) {
+            throw new IllegalArgumentException("Password must be at least 6 characters long, contain an uppercase letter, a lowercase letter, and a digit.");
+        }
+        this.password = passwordEncoder.encode(this.password);
+    }
 
     @Column(name = "role", insertable = false, updatable = false)
     @Pattern(regexp = "^(USER|COACH)$", message = "Field validator allows only role states: {USER | COACH}")

@@ -2,6 +2,7 @@ package com.fiitimprove.backend.controllers;
 
 
 import com.fiitimprove.backend.dto.AuthentificationResponse;
+import com.fiitimprove.backend.dto.SignInRequest;
 import com.fiitimprove.backend.models.User;
 import com.fiitimprove.backend.services.JwtService;
 import com.fiitimprove.backend.services.UserService;
@@ -34,7 +35,16 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
-
+    @PostMapping("/signIn")
+    public ResponseEntity<?> userSignIn(@RequestBody SignInRequest signInRequest) {
+        try {
+            AuthentificationResponse userLoginResponse = jwtService.signIn(signInRequest);
+            return ResponseEntity.ok(userLoginResponse);
+        } catch(Exception ex)
+        {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+        }
+    }
     @GetMapping("/getAll")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.findAll());
