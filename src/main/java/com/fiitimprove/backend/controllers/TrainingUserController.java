@@ -1,6 +1,6 @@
 package com.fiitimprove.backend.controllers;
 
-import com.fiitimprove.backend.dto.EnrollUserRequest;
+import com.fiitimprove.backend.requests.EnrollUserRequest;
 import com.fiitimprove.backend.dto.TrainingUserDTO;
 import com.fiitimprove.backend.models.TrainingUser;
 import com.fiitimprove.backend.services.TrainingUserService;

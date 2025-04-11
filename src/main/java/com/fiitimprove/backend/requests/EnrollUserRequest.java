@@ -1,4 +1,4 @@
-package com.fiitimprove.backend.dto;
+package com.fiitimprove.backend.requests;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

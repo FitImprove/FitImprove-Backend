@@ -109,6 +109,7 @@ public abstract class User {
     @OneToOne(mappedBy = "user")
     @JsonManagedReference
     private Settings settings;
+
     public enum Gender {
         MALE, FEMALE
     }
