@@ -2,8 +2,10 @@ package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.models.Settings;
 import com.fiitimprove.backend.services.SettingsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,15 +15,31 @@ import java.util.List;
 @RequestMapping("/api/settings")
 public class SettingsController {
 
-    @Autowired
-    private SettingsService settingsService;
+    private final SettingsService settingsService;
+
+    public SettingsController(SettingsService settingsService) {
+        this.settingsService = settingsService;
+    }
 
     @PostMapping("/create/{userId}")
+    @Operation(summary = "Create settings for a user", description = "Creates settings for a specified user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Settings created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid settings data"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     public ResponseEntity<Settings> createSettings(@PathVariable Long userId, @Valid @RequestBody Settings settings) {
         return ResponseEntity.ok(settingsService.createSettings(userId, settings));
     }
 
     @GetMapping("/user/{userId}")
+    @Operation(summary = "Get settings by user ID", description = "Retrieves settings for a specified user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Settings retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "Settings or user not found")
+    })
     public ResponseEntity<Settings> getSettingsByUserId(@PathVariable Long userId) {
         Settings settings = settingsService.findByUserId(userId);
         if (settings == null) {
@@ -31,8 +49,12 @@ public class SettingsController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all settings", description = "Retrieves a list of all settings")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of settings retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+    })
     public ResponseEntity<List<Settings>> getAllSettings() {
         return ResponseEntity.ok(settingsService.findAll());
     }
-
 }

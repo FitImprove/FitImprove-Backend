@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -32,6 +33,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
+@Schema(description = "Base class for users (RegularUser or Coach)", subTypes = {Coach.class, RegularUser.class})
 public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -108,6 +110,7 @@ public abstract class User {
     @OneToOne(mappedBy = "user")
     @JsonManagedReference
     private Settings settings;
+
     public enum Gender {
         MALE, FEMALE
     }
