@@ -1,5 +1,6 @@
 package com.fiitimprove.backend.services;
 
+import com.fiitimprove.backend.exceptions.ResourceNotFoundException;
 import com.fiitimprove.backend.models.Chat;
 import com.fiitimprove.backend.models.Coach;
 import com.fiitimprove.backend.models.RegularUser;
@@ -41,10 +42,14 @@ public class ChatService {
     }
 
     public List<Chat> findChatsByCoachId(Long coachId) {
+        Coach coach = coachRepository.findById(coachId)
+                .orElseThrow(() -> new ResourceNotFoundException("Coach not found with id: " + coachId));
         return chatRepository.findByCoachId(coachId);
     }
 
     public List<Chat> findChatsByRegularUserId(Long regularUserId) {
+        RegularUser regularUser = regularUserRepository.findById(regularUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("RegularUser not found with id: " + regularUserId));
         return chatRepository.findByRegularUserId(regularUserId);
     }
 
