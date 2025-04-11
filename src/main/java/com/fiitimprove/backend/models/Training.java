@@ -30,7 +30,7 @@ public class Training {
     private ForType forType = ForType.EVERYONE;
 
     @Column(name = "time_date_and_time", nullable = false)
-    private LocalDateTime timeDateAndTime;
+    private LocalDateTime time;
 
     @Column(name = "free_slots")
     @Min(value = 0, message = "FreeSlots can not be negative")
@@ -38,6 +38,9 @@ public class Training {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "duration", nullable = false)
+    private int durationMinutes;
 
     @Column(nullable = false)
     private String title;

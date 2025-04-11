@@ -39,7 +39,7 @@ public class TrainingUserDTO {
             tr.getUser().getId(), 
             tr.getTraining().getId(), 
             tr.getStatus(), 
-            tr.getTraining().getTimeDateAndTime(), 
+            tr.getTraining().getTime(), 
             tr.getInvitedAt(), 
             tr.getBookedAt(), 
             tr.getCanceledAt()

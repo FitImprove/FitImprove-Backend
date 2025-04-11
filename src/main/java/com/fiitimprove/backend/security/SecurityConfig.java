@@ -39,15 +39,16 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authz -> authz
-                                .requestMatchers(
-                                        "/api/users/signup",
-                                        "/api/password/**",
-                                        "/api/images/get/{filename}",
-                                        "/api/images/files/{userId}",
-                                        "/api/images/descriptors/{userId}",
-                                        "/api/users/signIn"
-                                ).permitAll()
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
+                                // .requestMatchers(
+                                //         "/api/users/signup",
+                                //         "/api/password/**",
+                                //         "/api/images/get/{filename}",
+                                //         "/api/images/files/{userId}",
+                                //         "/api/images/descriptors/{userId}",
+                                //         "/api/users/signIn"
+                                // ).permitAll()
+                                // .anyRequest().authenticated()
                 );
         return http.build();
     }

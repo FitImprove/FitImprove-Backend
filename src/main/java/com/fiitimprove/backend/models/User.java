@@ -12,7 +12,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -38,13 +37,13 @@ public abstract class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     @NotNull(message = "Name can not be null/empty")
     @Size(min = 1, max = 128, message = "Name must be between 1 and 128 characters")
     @Pattern(regexp = "^[\\p{L}]+$", message = "Name can only contain letters from any language")
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "surname", nullable = false)
     @NotNull(message = "Surname can not be null/empty")
     @Size(min = 1, max = 128, message = "Surname must be between 1 and 128 characters")
     @Pattern(regexp = "^[\\p{L}]+$", message = "Surname can only contain letters from any language")

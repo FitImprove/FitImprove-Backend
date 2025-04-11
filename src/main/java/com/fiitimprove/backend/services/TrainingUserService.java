@@ -1,5 +1,6 @@
 package com.fiitimprove.backend.services;
 
+import com.fiitimprove.backend.dto.AttendanceDTO;
 import com.fiitimprove.backend.exceptions.IncorrectDataException;
 import com.fiitimprove.backend.exceptions.ResourceNotFoundException;
 import com.fiitimprove.backend.models.RegularUser;
@@ -123,7 +124,7 @@ public class TrainingUserService {
             throw new IllegalStateException("Cannot enroll in a canceled training");
         if (training.getFreeSlots() <= 0 && st == Status.AGREED) 
             throw new IllegalStateException("No free slots available");
-        if (training.getTimeDateAndTime().isBefore(LocalDateTime.now())) 
+        if (training.getTime().isBefore(LocalDateTime.now())) 
             throw new IllegalStateException("Can not enroll in training that already started/ended");
 
         var existing = trainingUserRepository.findByTrainingIdAndUserIdAndStatusIn(training.getId(), user.getId(), Arrays.asList(Status.AGREED, Status.INVITED));
@@ -140,5 +141,10 @@ public class TrainingUserService {
         }
 
         return this.createUnsafe(training, user, st);
+    }
+
+    public List<AttendanceDTO> getAttendedTrainings(Long userId, LocalDateTime start, LocalDateTime end) {
+        List<TrainingUser> tus = trainingUserRepository.findTrainRecordsInTimePeriod(userId, start, end, TrainingUser.Status.AGREED);
+        return AttendanceDTO.createFromList(tus);
     }
 }

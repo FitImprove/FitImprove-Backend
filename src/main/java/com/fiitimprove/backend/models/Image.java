@@ -20,7 +20,7 @@ public class Image {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private RegularUser user;
+    private User user;
 
     @NotBlank(message = "Image path can not be empty")
     @JoinColumn(name = "path", nullable = false)

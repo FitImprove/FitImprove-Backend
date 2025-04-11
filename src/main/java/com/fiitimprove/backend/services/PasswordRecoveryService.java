@@ -1,7 +1,7 @@
 package com.fiitimprove.backend.services;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,9 +27,9 @@ public class PasswordRecoveryService {
 
     public PasswordRecovery create(String email) {
         User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Could not find user by email"));
+            .orElseThrow(() -> new ResourceNotFoundException("Could not find user by email"));
         
-        String token = UUID.randomUUID().toString();
+        String token = String.format("%ld", ThreadLocalRandom.current().nextLong());
         PasswordRecovery resetToken = new PasswordRecovery();
         resetToken.setToken(token);
         resetToken.setUser(user);
@@ -71,6 +71,7 @@ public class PasswordRecoveryService {
 
     private void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("fitimprove.email.sender@gmail.com");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(body);

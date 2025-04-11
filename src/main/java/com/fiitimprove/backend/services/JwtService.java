@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import static io.jsonwebtoken.Jwts.*;
 
-
 @Service
 public class JwtService {
     @Value("${jwt.secret}")

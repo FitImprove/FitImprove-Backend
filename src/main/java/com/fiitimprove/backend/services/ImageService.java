@@ -17,12 +17,12 @@ import com.fiitimprove.backend.exceptions.NorPermitedAccess;
 import com.fiitimprove.backend.exceptions.ResourceNotFoundException;
 import com.fiitimprove.backend.models.Image;
 import com.fiitimprove.backend.repositories.ImageRepository;
-import com.fiitimprove.backend.repositories.RegularUserRepository;
+import com.fiitimprove.backend.repositories.UserRepository;
 
 @Service
 public class ImageService {
     @Autowired
-    private RegularUserRepository regularUserRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private ImageRepository imageRepository;
@@ -39,7 +39,7 @@ public class ImageService {
         this.validatePath(filePath);
 
         Image img = new Image();
-        img.setUser(regularUserRepository.findById(userId)
+        img.setUser(userRepository.findById(userId)
             .orElseThrow(() -> new ResourceNotFoundException("User not found")));
         img.setPath(filename);
 
