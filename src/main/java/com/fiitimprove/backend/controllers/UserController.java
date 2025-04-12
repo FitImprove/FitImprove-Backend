@@ -1,10 +1,12 @@
 package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.dto.AuthentificationResponse;
+import com.fiitimprove.backend.exceptions.AccessDeniedException;
 import com.fiitimprove.backend.repositories.UserRepository;
 import com.fiitimprove.backend.requests.SignInRequest;
 import com.fiitimprove.backend.models.User;
 import com.fiitimprove.backend.requests.UserUpdateProfileRequest;
+import com.fiitimprove.backend.security.SecurityUtil;
 import com.fiitimprove.backend.services.JwtService;
 import com.fiitimprove.backend.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,9 +35,8 @@ public class UserController {
 
     @Autowired
     private JwtService jwtService;
-
     @Autowired
-    private UserRepository userRepository;
+    private SecurityUtil securityUtil;
 
     @PostMapping("/signup")
     @Operation(summary = "Register a new user", description = "Creates a new user (RegularUser or Coach) and returns an authentication token")
@@ -86,13 +87,14 @@ public class UserController {
                             schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token",
                     content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = String.class)))
     })
     public ResponseEntity<?> getUserData() {
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User user = userRepository.findByUsername(userDetails.getUsername())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            User user = securityUtil.getCurrentUser();
             return ResponseEntity.ok(user);
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -115,6 +117,9 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = String.class)))
@@ -123,19 +128,16 @@ public class UserController {
             @Parameter(description = "ID of the user to update") @PathVariable Long id,
             @RequestBody UserUpdateProfileRequest updateRequest) {
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User user = userRepository.findByUsername(userDetails.getUsername())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-            Long userId = user.getId();
-            if (!userId.equals(id)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body("You can only update your own profile");
+            Long currentUserId = securityUtil.getCurrentUserId();
+            if (!currentUserId.equals(id)) {
+                throw new AccessDeniedException("You can only update your own profile");
             }
-
-            User updatedUser = userService.updateUser(userId, updateRequest);
+            User updatedUser = userService.updateUser(id, updateRequest);
             System.out.println("u4");
             return ResponseEntity.ok(updatedUser);
+        } catch (AccessDeniedException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ex.getMessage());
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ex.getMessage());
@@ -144,7 +146,6 @@ public class UserController {
                     .body("An error occurred while updating the user: " + ex.getMessage());
         }
     }
-
     @GetMapping("/getAll")
     @Operation(summary = "Get all users", description = "Returns a list of all users in the system")
     @ApiResponses(value = {

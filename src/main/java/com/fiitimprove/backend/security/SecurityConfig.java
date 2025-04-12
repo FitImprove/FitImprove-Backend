@@ -35,8 +35,14 @@ public class SecurityConfig {
                                 "api/users/getAll"
                         ).permitAll()
                         .requestMatchers(
+                                "/api/settings/update/{user_id}",
+                                "/api/gyms/update/{coach_id}",
+                                "/api/gyms/delete/{coach_id}",
                                 "/api/users/user",
-                                "/api/users/update/{id}"
+                                "/api/users/update/{id}",
+                                "/api/chats/create",
+                                "/api/chats/coach/{coach_id}",
+                                "/api/chats/user/{regularUserId}"
                         ).authenticated()
                         .anyRequest().permitAll()
                 )

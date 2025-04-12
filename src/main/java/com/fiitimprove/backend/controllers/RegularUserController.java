@@ -16,7 +16,7 @@ public class RegularUserController {
 
     private final RegularUserService regularUserService;
 
-    // Конструкторна ін’єкція замість @Autowired
+
     public RegularUserController(RegularUserService regularUserService) {
         this.regularUserService = regularUserService;
     }

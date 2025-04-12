@@ -1,6 +1,9 @@
 package com.fiitimprove.backend.controllers;
 
+import com.fiitimprove.backend.exceptions.AccessDeniedException;
 import com.fiitimprove.backend.models.Settings;
+import com.fiitimprove.backend.requests.SettingsUpdateRequest;
+import com.fiitimprove.backend.security.SecurityUtil;
 import com.fiitimprove.backend.services.SettingsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,9 +19,10 @@ import java.util.List;
 public class SettingsController {
 
     private final SettingsService settingsService;
-
-    public SettingsController(SettingsService settingsService) {
+    private final SecurityUtil securityUtil;
+    public SettingsController(SettingsService settingsService, SecurityUtil securityUtil) {
         this.settingsService = settingsService;
+        this.securityUtil = securityUtil;
     }
 
     @PostMapping("/create/{userId}")
@@ -56,5 +60,21 @@ public class SettingsController {
     })
     public ResponseEntity<List<Settings>> getAllSettings() {
         return ResponseEntity.ok(settingsService.findAll());
+    }
+    @PutMapping("/update/{userId}")
+    @Operation(summary = "Update settings for a user", description = "Updates settings for a specified user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Settings updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid settings data"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "Settings or user not found")
+    })
+    public ResponseEntity<Settings> updateSettings(@PathVariable Long userId, @Valid @RequestBody SettingsUpdateRequest request) {
+        Long currentUserId = securityUtil.getCurrentUserId();
+        if (!currentUserId.equals(userId)) {
+            throw new AccessDeniedException("You can only update your own settings");
+        }
+        Settings updatedSettings = settingsService.updateSettings(userId, request);
+        return ResponseEntity.ok(updatedSettings);
     }
 }
