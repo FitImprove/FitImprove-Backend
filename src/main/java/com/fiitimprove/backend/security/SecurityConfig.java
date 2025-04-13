@@ -37,7 +37,22 @@ public class SecurityConfig {
                                 "/api/password/check-code/{token}",
                                 "/api/password/set-new-password"
                         ).permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/api/settings/update/{user_id}",
+                                "/api/gyms/update/{coach_id}",
+                                "/api/gyms/delete/{coach_id}",
+                                "/api/users/user",
+                                "/api/users/update/{id}",
+                                "/api/chats/create",
+                                "/api/chats/**",
+                                "/api/chats/coach/{coach_id}",
+                                "/api/chats/user/{regularUserId}",
+                                "/api/images/upload/{user_id}",
+                                "/api/trainings/**",
+                                "/api/training-users/**"
+                        ).authenticated()
+                        .anyRequest().permitAll()
+                        //.anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -46,16 +61,3 @@ public class SecurityConfig {
 
 
 }
-/*
-.requestMatchers(
-                                "/api/settings/update/{user_id}",
-                                "/api/gyms/update/{coach_id}",
-                                "/api/gyms/delete/{coach_id}",
-                                "/api/users/user",
-                                "/api/users/update/{id}",
-                                "/api/chats/create",
-                                "/api/chats/coach/{coach_id}",
-                                "/api/chats/user/{regularUserId}"
-                        ).authenticated()
-                        .anyRequest().permitAll()
- */
