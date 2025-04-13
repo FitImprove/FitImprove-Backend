@@ -32,9 +32,22 @@ public class SecurityConfig {
                                 "/api/images/files/{userId}",
                                 "/api/images/descriptors/{userId}",
                                 "/api/users/signIn",
-                                "api/users/getAll"
+                                "api/users/getAll",
+                                "/api/password/recover/{email}",
+                                "/api/password/check-code/{token}",
+                                "/api/password/set-new-password"
                         ).permitAll()
-                        .requestMatchers(
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+
+
+
+}
+/*
+.requestMatchers(
                                 "/api/settings/update/{user_id}",
                                 "/api/gyms/update/{coach_id}",
                                 "/api/gyms/delete/{coach_id}",
@@ -45,11 +58,4 @@ public class SecurityConfig {
                                 "/api/chats/user/{regularUserId}"
                         ).authenticated()
                         .anyRequest().permitAll()
-                )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
-
-
-
-}
+ */

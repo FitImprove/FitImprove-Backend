@@ -1,10 +1,12 @@
 package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.dto.PasswordResetDto;
+import com.fiitimprove.backend.security.SecurityUtil;
 import com.fiitimprove.backend.services.PasswordRecoveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/password")
 public class PasswordRecoveryController {
 
+    @Autowired
+    private SecurityUtil securityUtil;
     private final PasswordRecoveryService passRecover;
 
     public PasswordRecoveryController(PasswordRecoveryService passRecover) {
