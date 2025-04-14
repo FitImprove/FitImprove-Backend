@@ -1,5 +1,6 @@
 package com.fiitimprove.backend.controllers;
 
+import com.fiitimprove.backend.dto.PubTrainingDTO;
 import com.fiitimprove.backend.dto.TrainingEditDTO;
 import com.fiitimprove.backend.dto.TrainingId;
 import com.fiitimprove.backend.exceptions.AccessDeniedException;
@@ -78,6 +79,40 @@ public class TrainingController {
         Long currentUserId = securityUtil.getCurrentUserId();
         trainingService.edit(data);
         return ResponseEntity.ok("Data changed successfully");
+    }
+
+    @GetMapping("/get-available-trainings/{coachId}")
+    @Operation(summary = "Retuns availabe trainings for a specific coach, training is considered available if it is not cancaled, has free slots and is later then now", description = "Edits an existing training with the provided details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Data changed successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid training data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "Training not found")
+    })
+    public ResponseEntity<List<PubTrainingDTO>> getAvailableTrainings(@Valid @PathVariable Long coachId) throws Exception {
+        Long currentUserId = securityUtil.getCurrentUserId();
+        if (!currentUserId.equals(coachId)) {
+            throw new AccessDeniedException("You can only access your own trainings");
+        }
+        return ResponseEntity.ok(trainingService.getAvailableTrainings(coachId));
+    }
+
+    @GetMapping("/get-upcoming-trainings/{coachId}")
+    @Operation(summary = "Retuns a trainings for a coach that he has upcoming(future)", description = "Edits an existing training with the provided details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Data changed successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid training data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "Training not found")
+    })
+    public ResponseEntity<?> getUpcomingTraining(@Valid @PathVariable Long coachId) {
+        Long currentUserId = securityUtil.getCurrentUserId();
+        if (!currentUserId.equals(coachId)) {
+            throw new AccessDeniedException("You can only access your own trainings");
+        }
+        return ResponseEntity.ok(trainingService.getUpcomingTraining(coachId));
     }
 
     @GetMapping("/coach/{coachId}")

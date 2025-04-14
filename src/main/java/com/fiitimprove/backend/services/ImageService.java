@@ -54,7 +54,7 @@ public class ImageService {
         this.validatePath(imagePath);
         if (Files.exists(imagePath))
             return Files.readAllBytes(imagePath);
-        else return null;
+        else throw new ResourceNotFoundException("File path is incorrect");
     }
 
     private List<Image> getUserImageFull(Long userId) throws Exception {
