@@ -23,19 +23,16 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Без сесій
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
                                 "/api/users/signup",
-                                "/api/password/**",
                                 "/api/images/get/{filename}",
                                 "/api/images/files/{userId}",
                                 "/api/images/descriptors/{userId}",
                                 "/api/users/signIn",
-                                "api/users/getAll",
-                                "/api/password/recover/{email}",
-                                "/api/password/check-code/{token}",
-                                "/api/password/set-new-password"
+                                "api/users/getAll"
+                                // "/api/password/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/settings/update/{user_id}",
@@ -52,7 +49,6 @@ public class SecurityConfig {
                                 "/api/training-users/**"
                         ).authenticated()
                         .anyRequest().permitAll()
-                        //.anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

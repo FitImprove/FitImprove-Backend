@@ -3,6 +3,7 @@ package com.fiitimprove.backend.controllers;
 import com.fiitimprove.backend.dto.PubTrainingDTO;
 import com.fiitimprove.backend.dto.TrainingEditDTO;
 import com.fiitimprove.backend.dto.TrainingId;
+import com.fiitimprove.backend.dto.TrainingUserDTO;
 import com.fiitimprove.backend.exceptions.AccessDeniedException;
 import com.fiitimprove.backend.models.Training;
 import com.fiitimprove.backend.security.SecurityUtil;
@@ -84,7 +85,7 @@ public class TrainingController {
     @GetMapping("/get-available-trainings/{coachId}")
     @Operation(summary = "Retuns availabe trainings for a specific coach, training is considered available if it is not cancaled, has free slots and is later then now", description = "Edits an existing training with the provided details")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Data changed successfully"),
+            @ApiResponse(responseCode = "200", description = ""),
             @ApiResponse(responseCode = "400", description = "Invalid training data"),
             @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
             @ApiResponse(responseCode = "403", description = "Access denied"),
@@ -101,7 +102,7 @@ public class TrainingController {
     @GetMapping("/get-upcoming-trainings/{coachId}")
     @Operation(summary = "Retuns a trainings for a coach that he has upcoming(future)", description = "Edits an existing training with the provided details")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Data changed successfully"),
+            @ApiResponse(responseCode = "200", description = ""),
             @ApiResponse(responseCode = "400", description = "Invalid training data"),
             @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
             @ApiResponse(responseCode = "403", description = "Access denied"),
@@ -130,5 +131,18 @@ public class TrainingController {
         }
         List<Training> trainings = trainingService.getTrainingsByCoachId(coachId);
         return ResponseEntity.ok(trainings);
+    }
+
+    @GetMapping("/get-enrolled/{trainingId}")
+    @Operation(summary = "Returns users that are enrolled in a training", description = "")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of users retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "Coach not found")
+    })
+    public ResponseEntity<List<TrainingUserDTO>> getEnrolled(@Valid @PathVariable Long trainingId) {
+        Long currentUserId = securityUtil.getCurrentUserId();
+        return ResponseEntity.ok(trainingService.getEnrolledUsers(trainingId));
     }
 }

@@ -1,6 +1,5 @@
 package com.fiitimprove.backend.services;
 
-import com.fiitimprove.backend.dto.AuthentificationResponse;
 import com.fiitimprove.backend.models.Coach;
 import com.fiitimprove.backend.models.RegularUser;
 import com.fiitimprove.backend.models.Settings;

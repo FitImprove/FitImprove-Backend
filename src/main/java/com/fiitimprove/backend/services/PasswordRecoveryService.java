@@ -29,7 +29,7 @@ public class PasswordRecoveryService {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new ResourceNotFoundException("Could not find user by email"));
         
-        String token = String.format("%ld", ThreadLocalRandom.current().nextLong());
+        String token = String.format("%d", ThreadLocalRandom.current().nextLong());
         PasswordRecovery resetToken = new PasswordRecovery();
         resetToken.setToken(token);
         resetToken.setUser(user);
