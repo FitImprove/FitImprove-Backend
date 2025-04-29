@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping("/api/settings")
 public class SettingsController {
 
+
     private final SettingsService settingsService;
     private final SecurityUtil securityUtil;
     public SettingsController(SettingsService settingsService, SecurityUtil securityUtil) {

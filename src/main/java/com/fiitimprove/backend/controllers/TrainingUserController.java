@@ -3,6 +3,7 @@ package com.fiitimprove.backend.controllers;
 import com.fiitimprove.backend.dto.AttendanceDTO;
 import com.fiitimprove.backend.dto.EnrollUserRequest;
 import com.fiitimprove.backend.dto.TrainingUserDTO;
+import com.fiitimprove.backend.exceptions.AccessDeniedException;
 import com.fiitimprove.backend.models.TrainingUser;
 import com.fiitimprove.backend.security.SecurityUtil;
 import com.fiitimprove.backend.services.TrainingUserService;
@@ -35,6 +36,7 @@ public class TrainingUserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User enrolled successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Training or user not found")
     })
@@ -48,6 +50,7 @@ public class TrainingUserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Invitation denied successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Training or user not found")
     })
@@ -61,6 +64,7 @@ public class TrainingUserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Invitation accepted successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Training or user not found")
     })
@@ -74,6 +78,7 @@ public class TrainingUserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Training canceled successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Training or user not found")
     })
@@ -86,6 +91,7 @@ public class TrainingUserController {
     @Operation(summary = "Get all enrolled trainings for a user", description = "Retrieves a list of all trainings a user is enrolled in")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of enrolled trainings retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
@@ -96,11 +102,22 @@ public class TrainingUserController {
     }
 
     @GetMapping("/get-attendance/{userId}/{start}/{end}")
+    @Operation(summary = "Get attendance for a user", description = "Retrieves a list of attended trainings for a user within a specified date range")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of attended trainings retrieved successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid date range"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     public ResponseEntity<List<AttendanceDTO>> getAttendance(
-        @PathVariable Long userId,
-        @PathVariable LocalDateTime start,
-        @PathVariable LocalDateTime end
-    ) {
+            @PathVariable Long userId,
+            @PathVariable LocalDateTime start,
+            @PathVariable LocalDateTime end) {
+        Long currentUserId = securityUtil.getCurrentUserId();
+        if (!currentUserId.equals(userId)) {
+            throw new AccessDeniedException("You can only view your own attendance");
+        }
         return ResponseEntity.ok(trainingUserService.getAttendedTrainings(userId, start, end));
     }
 
