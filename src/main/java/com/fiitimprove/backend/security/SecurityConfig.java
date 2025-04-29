@@ -25,25 +25,25 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Без сесій
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(
-                                "/api/users/signup",
-                                "/api/password/**",
-                                "/api/images/get/{filename}",
-                                "/api/images/files/{userId}",
-                                "/api/images/descriptors/{userId}",
-                                "/api/users/signIn",
-                                "api/users/getAll"
-                        ).permitAll()
-                        .requestMatchers(
-                                "/api/settings/update/{user_id}",
-                                "/api/gyms/update/{coach_id}",
-                                "/api/gyms/delete/{coach_id}",
-                                "/api/users/user",
-                                "/api/users/update/{id}",
-                                "/api/chats/create",
-                                "/api/chats/coach/{coach_id}",
-                                "/api/chats/user/{regularUserId}"
-                        ).authenticated()
+                        // .requestMatchers(
+                        //         "/api/users/signup",
+                        //         "/api/password/**",
+                        //         "/api/images/get/{filename}",
+                        //         "/api/images/files/{userId}",
+                        //         "/api/images/descriptors/{userId}",
+                        //         "/api/users/signIn",
+                        //         "api/users/getAll"
+                        // ).permitAll()
+                        // .requestMatchers(
+                        //         "/api/settings/update/{user_id}",
+                        //         "/api/gyms/update/{coach_id}",
+                        //         "/api/gyms/delete/{coach_id}",
+                        //         "/api/users/user",
+                        //         "/api/users/update/{id}",
+                        //         "/api/chats/create",
+                        //         "/api/chats/coach/{coach_id}",
+                        //         "/api/chats/user/{regularUserId}"
+                        // ).authenticated()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

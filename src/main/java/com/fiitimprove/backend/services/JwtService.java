@@ -38,7 +38,7 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1 година
+                .setExpiration(new Date(System.currentTimeMillis() + 360000000)) // 10 година
                 .signWith(key)
                 .compact();
     }

@@ -13,19 +13,19 @@ import lombok.Setter;
 public class TrainingUserDTO {
     private Long id;
     private Long userId;
-    private Long trainingid;
+    private Long trainingId;
     private TrainingUser.Status status;
     private LocalDateTime trainingTime;
     private LocalDateTime invitedAt;
     private LocalDateTime bookedAt;
     private LocalDateTime canceledAt;
 
-    public TrainingUserDTO(Long id, Long userId, Long trainingid, TrainingUser.Status status, 
+    public TrainingUserDTO(Long id, Long userId, Long trainingId, TrainingUser.Status status, 
                            LocalDateTime trainingTime, LocalDateTime invitedAt, 
                            LocalDateTime bookedAt, LocalDateTime canceledAt) {
         this.id = id;
         this.userId = userId;
-        this.trainingid = trainingid;
+        this.trainingId = trainingId;
         this.status = status;
         this.trainingTime = trainingTime;
         this.invitedAt = invitedAt;

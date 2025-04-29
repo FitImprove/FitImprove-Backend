@@ -58,8 +58,17 @@ public class Training {
         EVERYONE, LIMITED
     }
 
+    @Column(name = "last_updated")
+    private LocalDateTime lastUpdated;
+
     @PrePersist
     protected void onCreate() {
+        this.lastUpdated = LocalDateTime.now();
         createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void updateLastUpdated() {
+        this.lastUpdated = LocalDateTime.now();
     }
 }

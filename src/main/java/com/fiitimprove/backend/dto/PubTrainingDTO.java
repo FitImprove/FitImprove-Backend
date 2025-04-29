@@ -22,34 +22,28 @@ public class PubTrainingDTO {
     private boolean isCanceled;
     private LocalDateTime time;
     private int durationMinutes;
+    private Long coachId;
+    private String coachName;
+    private String gymName;
 
-    public PubTrainingDTO(Long id, ForType forType, 
-                    int freeSlots, LocalDateTime createdAt, 
-                    String title, String description, boolean isCanceled,
-                    LocalDateTime time, int durationMinutes) {
-        this.id = id;
-        this.forType = forType;
-        this.freeSlots = freeSlots;
-        this.createdAt = createdAt;
-        this.title = title;
-        this.description = description;
-        this.isCanceled = isCanceled;
-        this.time = time;
-        this.durationMinutes = durationMinutes;
+    public PubTrainingDTO(Training training) {
+        this.id = training.getId();
+        this.forType = training.getForType();
+        this.freeSlots = training.getFreeSlots();
+        this.createdAt = training.getCreatedAt();
+        this.title = training.getTitle();
+        this.description = training.getDescription();
+        this.isCanceled = training.isCanceled();
+        this.time = training.getTime();
+        this.durationMinutes = training.getDurationMinutes();
+        this.coachId = training.getCoach().getId();
+        this.coachName = training.getCoach().getName() + " " + training.getCoach().getSurname();
+        var gym = training.getCoach().getGym();
+        this.gymName = (gym != null) ? gym.getName() : "NoName";
     }
 
     public static PubTrainingDTO create(Training training) {
-        return new PubTrainingDTO(
-            training.getId(),
-            training.getForType(),
-            training.getFreeSlots(),
-            training.getCreatedAt(),
-            training.getTitle(),
-            training.getDescription(),
-            training.isCanceled(),
-            training.getTime(),
-            training.getDurationMinutes()
-        );
+        return new PubTrainingDTO(training);
     } 
 
     public static List<PubTrainingDTO> createForList(List<Training> trs) {

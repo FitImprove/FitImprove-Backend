@@ -9,7 +9,4 @@ import lombok.Setter;
 public class EnrollUserRequest {
     @NotNull
     private Long trainingId;
-
-    @NotNull
-    private Long userId;
 }

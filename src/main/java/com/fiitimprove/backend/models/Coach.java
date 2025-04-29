@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -31,4 +32,13 @@ public class Coach extends User {
     @OneToOne(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Gym gym;
+
+    @Column(name = "last_updated")
+    private LocalDateTime lastUpdated;
+    
+    @PrePersist
+    @PreUpdate
+    public void updateLastUpdated() {
+        this.lastUpdated = LocalDateTime.now();
+    }
 }

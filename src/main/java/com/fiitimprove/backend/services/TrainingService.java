@@ -15,7 +15,6 @@ import com.fiitimprove.backend.repositories.RegularUserRepository;
 import com.fiitimprove.backend.repositories.TrainingRepository;
 import com.fiitimprove.backend.repositories.TrainingUserRepository;
 
-import jakarta.mail.Quota.Resource;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.ArrayList;
 
 @Service
@@ -105,6 +105,10 @@ public class TrainingService {
         return tr;
     }
 
+    public Optional<Training> get(Long id) {
+        return trainingRepository.findById(id);
+    }
+
     public List<PubTrainingDTO> getUpcomingTraining(Long coachId) {
         List<Training> ts = trainingRepository.findByCoachIdAndTimeAfterAndIsCanceledAndFreeSlotsGreaterThan(coachId, LocalDateTime.now(), false, -1);
         return PubTrainingDTO.createForList(ts);
@@ -125,5 +129,9 @@ public class TrainingService {
         sts.add(TrainingUser.Status.INVITED);
         List<TrainingUser> tu = trainingUserRepository.findUsersInTraining(trainingId, LocalDateTime.now(), sts);
         return TrainingUserDTO.convertList(tu);
+    }
+
+    public List<PubTrainingDTO> getUpdates(Long userId, LocalDateTime time) {
+        return PubTrainingDTO.createForList(trainingRepository.getUpdated(userId, time));
     }
 }

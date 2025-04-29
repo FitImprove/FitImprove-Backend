@@ -29,6 +29,6 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
 .vscode/
 todo!.md
+fitimprove-firebase-adminsdk-fbsvc-53f3c7d16e.json

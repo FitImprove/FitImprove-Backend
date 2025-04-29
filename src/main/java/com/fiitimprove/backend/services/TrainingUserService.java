@@ -1,6 +1,8 @@
 package com.fiitimprove.backend.services;
 
 import com.fiitimprove.backend.dto.AttendanceDTO;
+import com.fiitimprove.backend.dto.PubTrainingDTO;
+import com.fiitimprove.backend.dto.TrainingUserDTO;
 import com.fiitimprove.backend.exceptions.IncorrectDataException;
 import com.fiitimprove.backend.exceptions.ResourceNotFoundException;
 import com.fiitimprove.backend.models.RegularUser;
@@ -29,6 +31,9 @@ public class TrainingUserService {
 
     @Autowired
     private RegularUserRepository regularUserRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     public List<TrainingUser> getAllEntoledTrainings(Long userId) {
         return trainingUserRepository.findByUserId(userId);
@@ -108,6 +113,7 @@ public class TrainingUserService {
                 break;
             case Status.INVITED:
                 tu.setInvitedAt(LocalDateTime.now());
+                notificationService.sendInvitation(user, training);
                 break;
             default: break;
         }
@@ -146,5 +152,9 @@ public class TrainingUserService {
     public List<AttendanceDTO> getAttendedTrainings(Long userId, LocalDateTime start, LocalDateTime end) {
         List<TrainingUser> tus = trainingUserRepository.findTrainRecordsInTimePeriod(userId, start, end, TrainingUser.Status.AGREED);
         return AttendanceDTO.createFromList(tus);
+    }
+
+    public List<TrainingUserDTO> getUpdates(Long userId, LocalDateTime time) {
+        return TrainingUserDTO.convertList(trainingUserRepository.getUpdates(userId, time));
     }
 }

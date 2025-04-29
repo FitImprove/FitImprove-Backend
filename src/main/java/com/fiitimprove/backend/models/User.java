@@ -64,7 +64,7 @@ public abstract class User {
 
     @Column(nullable = false)
     @NotNull(message = "password can not be null")
-   // @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{6,32}$", message = "Password has to have lower and upper case en letter and some digit.")
+    // @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{6,32}$", message = "Password has to have lower and upper case en letter and some digit.")
     // @Pattern(regexp = "^(?!.*[<>\"'&;])$", message = "Password cannot contain malicious characters such as <, >, \", ', &, or ;.")
     private String password;
 
@@ -83,6 +83,10 @@ public abstract class User {
 
     @Column(name = "joined_at", updatable = false)
     private LocalDate joinedAt;
+
+    @Column(name = "pushtoken")
+    @Size(min = 1, max = 64, message = "Expo token length is expected to be in the range [1, 64]")
+    private String pushtoken;
     @PrePersist
     protected void onCreate() {
         joinedAt = LocalDate.now();

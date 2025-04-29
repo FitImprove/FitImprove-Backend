@@ -26,6 +26,12 @@ public interface TrainingUserRepository extends JpaRepository<TrainingUser, Long
         @Param("status") List<TrainingUser.Status> status
     );
 
+    @Query("SELECT tu FROM TrainingUser tu WHERE tu.user.id = :userId AND (tu.invitedAt > :time OR tu.canceledAt > :time OR tu.bookedAt > :time)")
+    List<TrainingUser> getUpdates(
+        @Param("userId") Long userId,
+        @Param("time") LocalDateTime time
+    );
+
     List<TrainingUser> findByUserIdAndStatusIn(Long userId, List<TrainingUser.Status> statuses);
     List<TrainingUser> findByUserId(Long userId);
 }
