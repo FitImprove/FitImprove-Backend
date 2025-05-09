@@ -31,6 +31,7 @@ public class NorificationTestController {
 
     @PostMapping("/send/{token}")
     public ResponseEntity<?> send(@PathVariable String token) {
+        System.out.println("Got token: " + token);
         notification.sendNotification(String.format("ExponentPushToken[%s]", token), "It works from back", "Some sql injection");
         return ResponseEntity.ok(null);
     }

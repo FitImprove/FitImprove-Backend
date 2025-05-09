@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fiitimprove.backend.models.Training;
-import com.fiitimprove.backend.models.Training.ForType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +14,7 @@ import lombok.Setter;
 public class PubTrainingDTO {
     private Long id;
     private Training.ForType forType;
+    private String type;
     private int freeSlots;
     private LocalDateTime createdAt;
     private String title;
@@ -29,6 +29,7 @@ public class PubTrainingDTO {
     public PubTrainingDTO(Training training) {
         this.id = training.getId();
         this.forType = training.getForType();
+        this.type = training.getType();
         this.freeSlots = training.getFreeSlots();
         this.createdAt = training.getCreatedAt();
         this.title = training.getTitle();
@@ -46,7 +47,7 @@ public class PubTrainingDTO {
         return new PubTrainingDTO(training);
     } 
 
-    public static List<PubTrainingDTO> createForList(List<Training> trs) {
+    public static List<PubTrainingDTO> createList(List<Training> trs) {
         List<PubTrainingDTO> res = new ArrayList<>(trs.size());
         for (Training tr : trs) {
             res.add(PubTrainingDTO.create(tr));

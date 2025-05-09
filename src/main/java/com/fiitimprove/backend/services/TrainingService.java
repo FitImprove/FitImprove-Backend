@@ -99,7 +99,8 @@ public class TrainingService {
         tr.setTitle(data.getTitle());
         tr.setDescription(data.getDescription());
         tr.setFreeSlots(data.getFreeSlots());
-        tr.setForType(data.getType());
+        tr.setForType(data.getForType());
+        tr.setType(data.getType());
         
         trainingRepository.save(tr);
         return tr;
@@ -111,27 +112,34 @@ public class TrainingService {
 
     public List<PubTrainingDTO> getUpcomingTraining(Long coachId) {
         List<Training> ts = trainingRepository.findByCoachIdAndTimeAfterAndIsCanceledAndFreeSlotsGreaterThan(coachId, LocalDateTime.now(), false, -1);
-        return PubTrainingDTO.createForList(ts);
+        return PubTrainingDTO.createList(ts);
     }
 
     public List<PubTrainingDTO> getAvailableTrainings(Long coachId) {
         List<Training> trs = trainingRepository.findByCoachIdAndTimeAfterAndIsCanceledAndFreeSlotsGreaterThan(coachId, LocalDateTime.now().plusMinutes(5), false, 0);
-        return PubTrainingDTO.createForList(trs);
+        return PubTrainingDTO.createList(trs);
     }
 
     public List<Training> getTrainingsByCoachId(Long coachId) {
         return trainingRepository.findByCoachId(coachId);
     }
 
-    public List<TrainingUserDTO> getEnrolledUsers(Long trainingId) {
+    public List<TrainingUser> getEnrolledUsers(Long trainingId) {
         List<TrainingUser.Status> sts = new ArrayList<TrainingUser.Status>(2);
         sts.add(TrainingUser.Status.AGREED);
         sts.add(TrainingUser.Status.INVITED);
         List<TrainingUser> tu = trainingUserRepository.findUsersInTraining(trainingId, LocalDateTime.now(), sts);
-        return TrainingUserDTO.convertList(tu);
+        return tu;
     }
 
-    public List<PubTrainingDTO> getUpdates(Long userId, LocalDateTime time) {
-        return PubTrainingDTO.createForList(trainingRepository.getUpdated(userId, time));
+    public List<PubTrainingDTO> getUpdatesRegularUser(Long userId, LocalDateTime time) {
+        return PubTrainingDTO.createList(trainingRepository.getUpdatedRegularUser(userId, time));
+    }
+    public List<PubTrainingDTO> getUpdatesCoach(Long coachId, LocalDateTime time) {
+        return PubTrainingDTO.createList(trainingRepository.getUpdatedCoach(coachId, time));
+    }
+
+    public List<Training> getAllForCoach(Long coachId) {
+        return trainingRepository.findByCoachId(coachId);
     }
 }

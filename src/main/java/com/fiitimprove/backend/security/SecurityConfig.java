@@ -42,7 +42,10 @@ public class SecurityConfig {
                                 "/api/users/update/{id}",
                                 "/api/chats/create",
                                 "/api/chats/coach/{coach_id}",
-                                "/api/chats/user/{regularUserId}"
+                                "/api/chats/user/{regularUserId}",
+                                "/api/notification/**",
+                                "/api/training-users/**",
+                                "/api/trainings/**"
                         ).authenticated()
                         .anyRequest().permitAll()
                 )

@@ -18,5 +18,7 @@ public class TrainingEditDTO {
     @NotNull
     private int freeSlots;
     @NotNull
-    private Training.ForType type;
+    private Training.ForType forType;
+    @NotNull
+    private String type;
 }

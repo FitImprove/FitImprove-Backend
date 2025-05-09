@@ -1,9 +1,7 @@
 package com.fiitimprove.backend.controllers;
 
-import com.fiitimprove.backend.dto.AttendanceDTO;
 import com.fiitimprove.backend.dto.EnrollUserRequest;
 import com.fiitimprove.backend.dto.TrainingUserDTO;
-import com.fiitimprove.backend.exceptions.AccessDeniedException;
 import com.fiitimprove.backend.models.TrainingUser;
 import com.fiitimprove.backend.security.SecurityUtil;
 import com.fiitimprove.backend.services.TrainingUserService;
@@ -87,6 +85,24 @@ public class TrainingUserController {
         return ResponseEntity.ok(TrainingUserDTO.create(tu));
     }
 
+    @PostMapping("/cancel-participation/{userId}/{trainingId}")
+    @Operation(summary = "Cancel training enrollment", description = "Allows coach to remove user from a list of agreed user for a trining")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Training canceled successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "Training or user not found")
+    })
+    public ResponseEntity<TrainingUserDTO> cancelParticipation(
+        @PathVariable long userId,
+        @PathVariable long trainingId) throws Exception {
+        
+        System.out.println("Cancel participation %d %d".formatted(userId, trainingId));
+        TrainingUser tu = trainingUserService.cancelParticipation(userId, trainingId);
+        return ResponseEntity.ok(TrainingUserDTO.create(tu));
+    }
+
     @GetMapping("/enrolled/all")
     @Operation(summary = "Get all enrolled trainings for a user", description = "Retrieves a list of all trainings a user is enrolled in")
     @ApiResponses(value = {
@@ -98,10 +114,10 @@ public class TrainingUserController {
     public ResponseEntity<List<TrainingUserDTO>> getAllEnrolledTrainings() throws Exception {
         Long userId = securityUtil.getCurrentUserId();
         List<TrainingUser> trs = trainingUserService.getAllEntoledTrainings(userId);
-        return ResponseEntity.ok(TrainingUserDTO.convertList(trs));
+        return ResponseEntity.ok(TrainingUserDTO.createList(trs));
     }
 
-    @GetMapping("/get-attendance/{userId}/{start}/{end}")
+    @GetMapping("/get-attendance/{start}/{end}")
     @Operation(summary = "Get attendance for a user", description = "Retrieves a list of attended trainings for a user within a specified date range")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of attended trainings retrieved successfully"),
@@ -110,14 +126,11 @@ public class TrainingUserController {
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<List<AttendanceDTO>> getAttendance(
-            @PathVariable Long userId,
+    public ResponseEntity<List<TrainingUserDTO>> getAttendance(
             @PathVariable LocalDateTime start,
             @PathVariable LocalDateTime end) {
-        Long currentUserId = securityUtil.getCurrentUserId();
-        if (!currentUserId.equals(userId)) {
-            throw new AccessDeniedException("You can only view your own attendance");
-        }
+        System.out.println("End: " + end + " Start " + start);
+        Long userId = securityUtil.getCurrentUserId();
         return ResponseEntity.ok(trainingUserService.getAttendedTrainings(userId, start, end));
     }
 

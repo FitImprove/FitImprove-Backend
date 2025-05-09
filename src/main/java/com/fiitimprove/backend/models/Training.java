@@ -29,6 +29,9 @@ public class Training {
     @Column(nullable = false)
     private ForType forType = ForType.EVERYONE;
 
+    @Column(nullable = false)
+    private String type;
+
     @Column(name = "time_date_and_time", nullable = false)
     private LocalDateTime time;
 
