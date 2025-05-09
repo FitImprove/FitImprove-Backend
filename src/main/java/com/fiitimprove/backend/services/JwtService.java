@@ -30,7 +30,7 @@ public class JwtService {
 
     public AuthentificationResponse signUp(User user) {
         String accessToken = generateAccessToken(user.getId());
-        return new AuthentificationResponse(user.getId(), user.getName(), accessToken);
+        return new AuthentificationResponse(user.getId(), user.getName(), user.getRole(), accessToken);
     }
 
     public String generateAccessToken(Long userId) {
@@ -50,7 +50,7 @@ public class JwtService {
             throw new IllegalArgumentException("Password incorrect");
         }
         String accessToken = generateAccessToken(user.getId());
-        return new AuthentificationResponse(user.getId(), user.getName(), accessToken);
+        return new AuthentificationResponse(user.getId(), user.getName(), user.getRole(), accessToken);
     }
 
 

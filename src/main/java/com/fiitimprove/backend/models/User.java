@@ -1,9 +1,6 @@
 package com.fiitimprove.backend.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -74,7 +71,7 @@ public abstract class User {
 
     @Column(name = "date_of_birth", nullable = false)
     @NotNull(message = "dateOfBirth can not be null")
-    private LocalDate dateOfBirth;
+    private String dateOfBirth;
 
     private String links;
 
@@ -101,10 +98,13 @@ public abstract class User {
         this.password = passwordEncoder.encode(this.password);
     }
 
-    @Column(name = "role", insertable = false, updatable = false)
-    @Pattern(regexp = "^(USER|COACH)$", message = "Field validator allows only role states: {USER | COACH}")
-    @JsonIgnore
-    private String role;
+    @JsonProperty("role") // Додає поле до JSON
+    @Transient            // Не зберігається в базі
+    public String getRole() {
+        if (this instanceof Coach) return "COACH";
+        if (this instanceof RegularUser) return "USER";
+        return "UNKNOWN";
+    }
 
     @Column(name = "self_information")
     @Size(min = 8, max = 1024, message = "Desription must be between 8 and 1024 characters")
@@ -117,5 +117,25 @@ public abstract class User {
 
     public enum Gender {
         MALE, FEMALE
+    }
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='[PROTECTED]'" + // Пароль не показуємо в явному вигляді
+                ", gender=" + gender +
+                ", dateOfBirth='" + dateOfBirth + '\'' +
+                ", links='" + links + '\'' +
+                ", lastTimeOnline=" + lastTimeOnline +
+                ", joinedAt=" + joinedAt +
+                ", pushtoken='" + pushtoken + '\'' +
+                ", role='" + getRole() + '\'' +
+                ", selfInformation='" + selfInformation + '\'' +
+                ", settings=" + (settings != null ? settings.toString() : "null") +
+                '}';
     }
 }

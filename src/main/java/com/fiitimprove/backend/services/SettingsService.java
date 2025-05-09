@@ -6,16 +6,22 @@ import com.fiitimprove.backend.models.User;
 import com.fiitimprove.backend.repositories.SettingsRepository;
 import com.fiitimprove.backend.repositories.UserRepository;
 import com.fiitimprove.backend.requests.SettingsUpdateRequest;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SettingsService {
 
     @Autowired
     private SettingsRepository settingsRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private UserRepository userRepository;
@@ -31,12 +37,20 @@ public class SettingsService {
         return settingsRepository.findByUserId(userId).get();
     }
     public Settings updateSettings(Long userId, SettingsUpdateRequest request) {
-        Settings settings = settingsRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Settings not found for user with id: " + userId));
+        System.out.println("tuuuu");
+        Optional<Settings> set = settingsRepository.findByUserId(userId);
+        Settings settings= null;
+        if(set.isPresent()) {
+            settings = set.get();
+        }
+        assert settings != null;
         settings.setTheme(request.getTheme());
         settings.setFontSize(request.getFontSize());
         settings.setNotifications(request.getNotifications());
-        return settingsRepository.save(settings);
+        System.out.println("tu uz" + settings.getUser());
+        System.out.println("Is managed: " + entityManager.contains(settings));
+        Settings s = settingsRepository.save(settings);
+        return s;
     }
     public List<Settings> findAll() {
         return settingsRepository.findAll();

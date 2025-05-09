@@ -4,11 +4,15 @@ import com.fiitimprove.backend.models.Coach;
 import com.fiitimprove.backend.models.RegularUser;
 import com.fiitimprove.backend.models.Settings;
 import com.fiitimprove.backend.models.User;
+import com.fiitimprove.backend.repositories.SettingsRepository;
 import com.fiitimprove.backend.repositories.UserRepository;
+import com.fiitimprove.backend.requests.NotificationUpdateRequest;
+import com.fiitimprove.backend.requests.SettingsUpdateRequest;
 import com.fiitimprove.backend.requests.UserUpdateProfileRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,12 +24,15 @@ public class UserService {
     @Autowired
     private SettingsService settingsService;
     @Autowired
+    private SettingsRepository settingsRepository;
+    @Autowired
     private JwtService jwtService;
     @Autowired
     private PasswordEncoder passwordEncoder;
     private boolean emailExists(String email) {
         return  userRepository.findByEmail(email).isPresent();
     }
+    @Transactional
     public User signup(User user) {
         System.out.println(user.getRole() + user.getName());
         if (!(user instanceof Coach) && !(user instanceof RegularUser)) {
@@ -36,6 +43,7 @@ public class UserService {
         }
         user.hashPassword(passwordEncoder);
         User u = userRepository.save(user);
+        System.out.println("hhhhii");
         Settings settings = new Settings();
         settings.setUser(u);
         settings.setTheme(Settings.Theme.PURPLE);
@@ -44,6 +52,7 @@ public class UserService {
         settingsService.createSettings(u.getId(), settings);
         u.setSettings(settings);
         u = userRepository.save(u);
+        System.out.println("hhhhii2");
         return u;
     }
     public User updateUser(Long userId, UserUpdateProfileRequest updateRequest) throws Exception {
@@ -51,6 +60,7 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User with ID " + userId + " not found"));
 
         // Оновлення полів
+        //System.out.println("tu");
         if (updateRequest.getName() != null) {
             existingUser.setName(updateRequest.getName());
         }
@@ -64,17 +74,7 @@ public class UserService {
             }
             existingUser.setUsername(updateRequest.getUsername());
         }
-        if (updateRequest.getEmail() != null) {
-            if (userRepository.findByEmail(updateRequest.getEmail()).isPresent() &&
-                    !updateRequest.getEmail().equals(existingUser.getEmail())) {
-                throw new IllegalArgumentException("Email " + updateRequest.getEmail() + " is already taken");
-            }
-            existingUser.setEmail(updateRequest.getEmail());
-        }
-        if (updateRequest.getPassword() != null) {
-            existingUser.setPassword(updateRequest.getPassword());
-            existingUser.hashPassword(passwordEncoder);
-        }
+
         if (updateRequest.getGender() != null) {
             existingUser.setGender(updateRequest.getGender());
         }
@@ -87,7 +87,7 @@ public class UserService {
         if (updateRequest.getSelfInformation() != null) {
             existingUser.setSelfInformation(updateRequest.getSelfInformation());
         }
-
+       // System.out.println("tu");
         // Оновлення полів, специфічних для Coach
         if (existingUser instanceof Coach coach) {
             if (updateRequest.getFields() != null) {
@@ -102,14 +102,27 @@ public class UserService {
             if (updateRequest.getWorksInFieldSince() != null) {
                 coach.setWorksInFieldSince(updateRequest.getWorksInFieldSince());
             }
-        } else if (existingUser instanceof RegularUser) {
-            if (updateRequest.getFields() != null || updateRequest.getSkills() != null ||
-                    updateRequest.getSelfIntroduction() != null || updateRequest.getWorksInFieldSince() != null) {
-                throw new IllegalArgumentException("RegularUser cannot update Coach-specific fields (fields, skills, selfIntroduction, worksInFieldSince)");
-            }
         }
-
+        //System.out.println("tu");
+//        if (updateRequest.getSettings() != null) {
+//            SettingsUpdateRequest settingsRequest = new SettingsUpdateRequest();
+//            settingsRequest.setTheme(updateRequest.getSettings().getTheme());
+//            settingsRequest.setFontSize(updateRequest.getSettings().getFontSize());
+//            settingsRequest.setNotifications(updateRequest.getSettings().getNotifications());
+//            settingsService.updateSettings(userId, settingsRequest);
+//            Settings saved = settingsRepository.findByUserId(userId).orElseThrow();
+//            System.out.println("AFTER SAVE: " + saved);
+//        }
+        System.out.println("tu"+existingUser);
         return userRepository.save(existingUser);
+    }
+    @Transactional
+    public void updateNotifications(Long userId, NotificationUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with ID " + userId + " not found"));
+
+        user.setPushtoken(request.isNotificationsEnabled() ? request.getExpoPushToken() : null);
+        userRepository.save(user);
     }
     public List<User> findAll() {
         return userRepository.findAll();

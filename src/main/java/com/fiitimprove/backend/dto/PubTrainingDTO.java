@@ -40,7 +40,7 @@ public class PubTrainingDTO {
         this.coachId = training.getCoach().getId();
         this.coachName = training.getCoach().getName() + " " + training.getCoach().getSurname();
         var gym = training.getCoach().getGym();
-        this.gymName = (gym != null) ? gym.getName() : "NoName";
+        this.gymName = (gym != null) ? gym.getAddress() : "NoAddress";
     }
 
     public static PubTrainingDTO create(Training training) {

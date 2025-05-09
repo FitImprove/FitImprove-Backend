@@ -62,7 +62,7 @@ public class SettingsController {
     public ResponseEntity<List<Settings>> getAllSettings() {
         return ResponseEntity.ok(settingsService.findAll());
     }
-    @PutMapping("/update/{userId}")
+    @PutMapping("/update")
     @Operation(summary = "Update settings for a user", description = "Updates settings for a specified user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Settings updated successfully"),
@@ -70,12 +70,10 @@ public class SettingsController {
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Settings or user not found")
     })
-    public ResponseEntity<Settings> updateSettings(@PathVariable Long userId, @Valid @RequestBody SettingsUpdateRequest request) {
+    public ResponseEntity<Settings> updateSettings( @Valid @RequestBody SettingsUpdateRequest request) {
         Long currentUserId = securityUtil.getCurrentUserId();
-        if (!currentUserId.equals(userId)) {
-            throw new AccessDeniedException("You can only update your own settings");
-        }
-        Settings updatedSettings = settingsService.updateSettings(userId, request);
+        System.out.println(currentUserId);
+        Settings updatedSettings = settingsService.updateSettings(currentUserId, request);
         return ResponseEntity.ok(updatedSettings);
     }
 }

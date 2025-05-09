@@ -36,7 +36,6 @@ public class Coach extends User {
     @Column(name = "last_updated")
     private LocalDateTime lastUpdated;
     
-    @PrePersist
     @PreUpdate
     public void updateLastUpdated() {
         this.lastUpdated = LocalDateTime.now();

@@ -59,7 +59,7 @@ public class GymController {
     public ResponseEntity<Gym> getGymByCoachId(@PathVariable Long coachId) {
         return ResponseEntity.ok(gymService.findByCoachId(coachId));
     }
-    @PutMapping("/update/{coachId}")
+    @PutMapping("/update")
     @Operation(summary = "Update gym for a coach", description = "Updates the gym associated with a specified coach")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Gym updated successfully"),
@@ -67,12 +67,9 @@ public class GymController {
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Coach or gym not found")
     })
-    public ResponseEntity<Gym> updateGym(@PathVariable Long coachId, @Valid @RequestBody GymUpdateRequest request) {
+    public ResponseEntity<Gym> updateGym(@Valid @RequestBody GymUpdateRequest request) {
         Long currentUserId = securityUtil.getCurrentUserId();
-        if (!currentUserId.equals(coachId)) {
-            throw new AccessDeniedException("You can only update your own gym");
-        }
-        Gym updatedGym = gymService.updateGym(coachId, request);
+        Gym updatedGym = gymService.updateGym(currentUserId, request);
         return ResponseEntity.ok(updatedGym);
     }
 }

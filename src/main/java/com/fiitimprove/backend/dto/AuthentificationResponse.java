@@ -13,6 +13,8 @@ import lombok.*;
 public class AuthentificationResponse {
     private Long id;
     private String username;
+    @Schema(description = "User role")
+    private String role;
     @Schema(description = "Token access")
     private String token;
 }
