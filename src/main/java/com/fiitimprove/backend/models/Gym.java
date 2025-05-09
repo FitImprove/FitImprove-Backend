@@ -23,9 +23,9 @@ public class Gym {
     @JsonBackReference
     private Coach coach;
 
-    @NotBlank(message = "Gym name cannot be empty")
-    @Column(nullable = false)
-    private String name;
+//    @NotBlank(message = "Gym name cannot be empty")
+//    @Column(nullable = false)
+//    private String name;
 
     @DecimalMin(value = "-90.0", message = "Latitude must be between -90 and 90")
     @DecimalMax(value = "90.0", message = "Latitude must be between -90 and 90")

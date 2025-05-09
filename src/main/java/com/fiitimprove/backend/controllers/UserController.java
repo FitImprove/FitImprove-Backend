@@ -3,6 +3,7 @@ package com.fiitimprove.backend.controllers;
 import com.fiitimprove.backend.dto.AuthentificationResponse;
 import com.fiitimprove.backend.exceptions.AccessDeniedException;
 import com.fiitimprove.backend.repositories.UserRepository;
+import com.fiitimprove.backend.requests.NotificationUpdateRequest;
 import com.fiitimprove.backend.requests.SignInRequest;
 import com.fiitimprove.backend.models.User;
 import com.fiitimprove.backend.requests.UserUpdateProfileRequest;
@@ -51,6 +52,7 @@ public class UserController {
     public ResponseEntity<?> signup(@RequestBody User user) {
         try {
             User crUser = userService.signup(user);
+            System.out.println(crUser.toString());
             System.out.println("hi2");
             AuthentificationResponse authentificationResponse = jwtService.signUp(crUser);
             System.out.println("hi3");
@@ -102,7 +104,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     @Operation(summary = "Update user profile", description = "Updates the profile of the authenticated user. Only the user can update their own profile. Requires a valid JWT token in the Authorization header.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User profile updated successfully",
@@ -125,14 +127,16 @@ public class UserController {
                             schema = @Schema(implementation = String.class)))
     })
     public ResponseEntity<?> updateUser(
-            @Parameter(description = "ID of the user to update") @PathVariable Long id,
             @RequestBody UserUpdateProfileRequest updateRequest) {
         try {
+            System.out.println("som tu");
+
             Long currentUserId = securityUtil.getCurrentUserId();
-            if (!currentUserId.equals(id)) {
+            /*if (!currentUserId.equals(id)) {
                 throw new AccessDeniedException("You can only update your own profile");
-            }
-            User updatedUser = userService.updateUser(id, updateRequest);
+            }*/
+            System.out.println("som tu" + currentUserId + " " + updateRequest);
+            User updatedUser = userService.updateUser(currentUserId, updateRequest);
             System.out.println("u4");
             return ResponseEntity.ok(updatedUser);
         } catch (AccessDeniedException ex) {
@@ -156,4 +160,19 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.findAll());
     }
+    @PutMapping("/notifications")
+    public ResponseEntity<?> updateNotifications(
+            @RequestBody NotificationUpdateRequest request) {
+        try {
+            Long currentUserId = securityUtil.getCurrentUserId();
+            userService.updateNotifications(currentUserId, request);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while updating notifications: " + ex.getMessage());
+        }
+    }
+
 }

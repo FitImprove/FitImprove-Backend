@@ -28,13 +28,13 @@ public class PasswordRecoveryService {
     public PasswordRecovery create(String email) {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new ResourceNotFoundException("Could not find user by email"));
-        
+        System.out.println(email);
         String token = String.format("%d", ThreadLocalRandom.current().nextLong());
         PasswordRecovery resetToken = new PasswordRecovery();
         resetToken.setToken(token);
         resetToken.setUser(user);
         resetToken.setExpirationDate(LocalDateTime.now().plusHours(1));
-        
+        System.out.println("hi, i am in the end");
         passRecoverRep.save(resetToken);
         this.sendEmail(email, "Password change", String.format("The code for password recovery: %s", token));
         return resetToken;

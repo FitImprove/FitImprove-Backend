@@ -28,14 +28,27 @@ public class GymService {
         return gymRepository.findByCoachId(coachId)
                 .orElseThrow(() -> new RuntimeException("Gym not found for coach with id: " + coachId));
     }
+    @Transactional
     public Gym updateGym(Long coachId, GymUpdateRequest request) {
-        Gym gym = gymRepository.findByCoachId(coachId)
-                .orElseThrow(() -> new ResourceNotFoundException("Gym not found for coach with id: " + coachId));
-        gym.setName(request.getName());
+        Coach coach = coachRepository.findById(coachId)
+                .orElseThrow(() -> new ResourceNotFoundException("Coach not found with id: " + coachId));
+        System.out.println(coach);
+        Gym gym = gymRepository.findByCoachId(coachId).orElse(null);
+        System.out.println("ku");
+        if (gym == null) {
+            gym = new Gym();
+            gym.setCoach(coach);
+            coach.setGym(gym);
+        }
+        System.out.println("hi" + gym.getAddress());
         gym.setLatitude(request.getLatitude());
         gym.setLongitude(request.getLongitude());
         gym.setAddress(request.getAddress());
-        return gymRepository.save(gym);
+        System.out.println(gym.getAddress());
+
+        gymRepository.save(gym);
+        coachRepository.save(coach);
+        return gym;
     }
     @Transactional
     public void deleteGym(Long coachId) {

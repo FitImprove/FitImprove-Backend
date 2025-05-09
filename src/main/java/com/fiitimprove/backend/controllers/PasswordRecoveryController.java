@@ -30,6 +30,7 @@ public class PasswordRecoveryController {
             @ApiResponse(responseCode = "404", description = "User with this email not found")
     })
     public ResponseEntity<?> passwordRecover(@PathVariable("email") String email) {
+        System.out.println("hii, i am in recover");
         passRecover.create(email);
         return ResponseEntity.ok("Mail was sent to your email");
     }
