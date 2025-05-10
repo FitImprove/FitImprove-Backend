@@ -50,7 +50,10 @@ public class SecurityConfig {
                                 "/api/images/upload",
                                 "/api/images/descriptors",
                                 "/api/images/get/{filename}",
-                                "/api/images/del/{imgId}"
+                                "/api/images/del/{imgId}",
+                                "/api/notification/**",
+                                "/api/training-users/**",
+                                "/api/trainings/**"
                         ).authenticated()
                         .anyRequest().permitAll()
                 )

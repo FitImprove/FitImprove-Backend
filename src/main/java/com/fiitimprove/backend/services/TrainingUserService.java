@@ -67,6 +67,25 @@ public class TrainingUserService {
         return reservation;
     }
 
+    public TrainingUser cancelParticipation(Long userId, Long trainingId) {
+        var reservations = trainingUserRepository.findByTrainingIdAndUserIdAndStatusIn(trainingId, userId, Arrays.asList(Status.AGREED, Status.INVITED));
+        if (reservations.isEmpty())
+            throw new ResourceNotFoundException("User does not have an reservation in provided training");
+        TrainingUser reservation = reservations.get(0);
+        assert(reservation.getStatus() == Status.AGREED || reservation.getStatus() == Status.INVITED);
+        reservation.setStatus(Status.DENIED);
+        reservation.setCanceledAt(LocalDateTime.now());
+
+        Training tr = reservation.getTraining();
+        if (tr.getForType() == Training.ForType.EVERYONE || reservation.getInvitedAt() == null) {
+            tr.setFreeSlots(tr.getFreeSlots() + 1);
+            trainingRepository.save(tr);
+        }
+        
+        trainingUserRepository.save(reservation);
+        return reservation;
+    }
+
     public TrainingUser denyInvitation(Long trainingId, Long userId) throws Exception {
         var reservations = trainingUserRepository.findByTrainingIdAndUserIdAndStatusIn(trainingId, userId, Arrays.asList(Status.INVITED));
         if (reservations.isEmpty())
@@ -149,12 +168,12 @@ public class TrainingUserService {
         return this.createUnsafe(training, user, st);
     }
 
-    public List<AttendanceDTO> getAttendedTrainings(Long userId, LocalDateTime start, LocalDateTime end) {
+    public List<TrainingUserDTO> getAttendedTrainings(Long userId, LocalDateTime start, LocalDateTime end) {
         List<TrainingUser> tus = trainingUserRepository.findTrainRecordsInTimePeriod(userId, start, end, TrainingUser.Status.AGREED);
-        return AttendanceDTO.createFromList(tus);
+        return TrainingUserDTO.createList(tus);
     }
 
     public List<TrainingUserDTO> getUpdates(Long userId, LocalDateTime time) {
-        return TrainingUserDTO.convertList(trainingUserRepository.getUpdates(userId, time));
+        return TrainingUserDTO.createList(trainingUserRepository.getUpdates(userId, time));
     }
 }

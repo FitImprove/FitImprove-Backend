@@ -1,10 +1,10 @@
 package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.dto.PubTrainingDTO;
+import com.fiitimprove.backend.dto.PubUserDTO;
 import com.fiitimprove.backend.dto.TrainingEditDTO;
 import com.fiitimprove.backend.dto.TrainingId;
-import com.fiitimprove.backend.dto.TrainingUserDTO;
-import com.fiitimprove.backend.exceptions.AccessDeniedException;
+import com.fiitimprove.backend.fabric.PubUserDTOFabric;
 import com.fiitimprove.backend.models.Training;
 import com.fiitimprove.backend.security.SecurityUtil;
 import com.fiitimprove.backend.services.TrainingService;
@@ -27,9 +27,12 @@ public class TrainingController {
     private SecurityUtil securityUtil;
     @Autowired
     private final TrainingService trainingService;
+    @Autowired
+    private final PubUserDTOFabric userDtoFabric;
 
-    public TrainingController(TrainingService trainingService) {
+    public TrainingController(TrainingService trainingService, PubUserDTOFabric userDtoFabric) {
         this.trainingService = trainingService;
+        this.userDtoFabric = userDtoFabric;
     }
 
     @PostMapping("/create")
@@ -41,16 +44,12 @@ public class TrainingController {
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Coach not found")
     })
-    public ResponseEntity<Training> createTraining(
-            @RequestParam Long coachId,
+    public ResponseEntity<PubTrainingDTO> createTraining(
             @Valid @RequestBody Training training,
             @RequestParam(required = false) List<Long> invitedUserIds) throws Exception {
         Long currentUserId = securityUtil.getCurrentUserId();
-        if (!currentUserId.equals(coachId)) {
-            throw new AccessDeniedException("You can only create trainings for yourself");
-        }
-        Training createdTraining = trainingService.createTraining(coachId, training, invitedUserIds);
-        return ResponseEntity.ok(createdTraining);
+        Training createdTraining = trainingService.createTraining(currentUserId, training, invitedUserIds);
+        return ResponseEntity.ok(PubTrainingDTO.create(createdTraining));
     }
 
     @PostMapping("/cancel")
@@ -77,10 +76,11 @@ public class TrainingController {
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Training not found")
     })
-    public ResponseEntity<String> edit(@RequestBody TrainingEditDTO data) {
+    public ResponseEntity<PubTrainingDTO> edit(@RequestBody @Valid TrainingEditDTO data) {
+        System.out.println("Data received for eddit: " + data.getForType());
         Long currentUserId = securityUtil.getCurrentUserId();
-        trainingService.edit(data);
-        return ResponseEntity.ok("Data changed successfully");
+        Training t = trainingService.edit(data);
+        return ResponseEntity.ok(PubTrainingDTO.create(t));
     }
 
     @GetMapping("/{id}")
@@ -119,7 +119,7 @@ public class TrainingController {
         return ResponseEntity.ok(trainingService.getUpcomingTraining(currentUserId));
     }
 
-    @GetMapping("/coach/{coachId}")
+    @GetMapping("/coach")
     @Operation(summary = "Get trainings by coach ID", description = "Retrieves a list of trainings for a specific coach")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of trainings retrieved successfully"),
@@ -127,13 +127,10 @@ public class TrainingController {
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Coach not found")
     })
-    public ResponseEntity<List<Training>> getTrainingsByCoachId(@PathVariable Long coachId) {
-        Long currentUserId = securityUtil.getCurrentUserId();
-        if (!currentUserId.equals(coachId)) {
-            throw new AccessDeniedException("You can only access your own trainings");
-        }
+    public ResponseEntity<List<PubTrainingDTO>> getTrainingsByCoachId() {
+        Long coachId = securityUtil.getCurrentUserId();
         List<Training> trainings = trainingService.getTrainingsByCoachId(coachId);
-        return ResponseEntity.ok(trainings);
+        return ResponseEntity.ok(PubTrainingDTO.createList(trainings));
     }
 
     @GetMapping("/get-enrolled/{trainingId}")
@@ -144,15 +141,26 @@ public class TrainingController {
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Coach not found")
     })
-    public ResponseEntity<List<TrainingUserDTO>> getEnrolled(@Valid @PathVariable Long trainingId) {
-        Long currentUserId = securityUtil.getCurrentUserId();
-        return ResponseEntity.ok(trainingService.getEnrolledUsers(trainingId));
+    public ResponseEntity<List<PubUserDTO>> getEnrolled(@Valid @PathVariable Long trainingId) {
+        return ResponseEntity.ok(userDtoFabric.createList(trainingService.getEnrolledUsers(trainingId)));
     }
 
     @GetMapping("/updates")
-    public ResponseEntity<List<PubTrainingDTO>> getUpdates(@RequestParam LocalDateTime time) {
+    public ResponseEntity<List<PubTrainingDTO>> getUpdatesRegularUser(@RequestParam LocalDateTime time) {
         Long currentUserId = securityUtil.getCurrentUserId();
         System.err.printf("Update called for user: %d\n", currentUserId);
-        return ResponseEntity.ok(trainingService.getUpdates(currentUserId, time));
+        return ResponseEntity.ok(trainingService.getUpdatesRegularUser(currentUserId, time));
+    }
+    @GetMapping("/updates-coach")
+    public ResponseEntity<List<PubTrainingDTO>> getUpdatesCoach(@RequestParam LocalDateTime time) {
+        Long currentUserId = securityUtil.getCurrentUserId();
+        System.err.printf("Update called for user: %d\n", currentUserId);
+        return ResponseEntity.ok(trainingService.getUpdatesCoach(currentUserId, time));
+    }
+
+    @GetMapping("/all-trainings-coach")
+    public ResponseEntity<List<PubTrainingDTO>> getAllForCoach() {
+        Long currentUserId = securityUtil.getCurrentUserId();
+        return ResponseEntity.ok(PubTrainingDTO.createList(trainingService.getAllForCoach(currentUserId)));
     }
 }

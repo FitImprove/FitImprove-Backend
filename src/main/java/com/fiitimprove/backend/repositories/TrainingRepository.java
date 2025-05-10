@@ -18,8 +18,14 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
     List<Training> findByCoachIdAndTimeAfterAndIsCanceledAndFreeSlotsGreaterThan(Long coachId, LocalDateTime from, boolean isCanceled, int minFreeSlots);
 
     @Query(value = "SELECT t.* FROM training_users tu JOIN trainings t ON t.id = tu.training_id WHERE tu.user_id = :userId AND t.last_updated > :time", nativeQuery = true)
-    List<Training> getUpdated(
+    List<Training> getUpdatedRegularUser(
         @Param("userId") Long userId,
+        @Param("time") LocalDateTime time
+    );
+
+    @Query(value = "SELECT t.* FROM trainings t WHERE t.coach_id = :coachId AND t.last_updated > :time", nativeQuery = true)
+    List<Training> getUpdatedCoach(
+        @Param("coachId") Long coachId,
         @Param("time") LocalDateTime time
     );
 }

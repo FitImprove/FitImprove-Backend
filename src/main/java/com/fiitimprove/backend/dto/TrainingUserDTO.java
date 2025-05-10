@@ -46,7 +46,7 @@ public class TrainingUserDTO {
         );
     }
 
-    public static List<TrainingUserDTO> convertList(List<TrainingUser> trs) {
+    public static List<TrainingUserDTO> createList(List<TrainingUser> trs) {
         List<TrainingUserDTO> arr = new ArrayList<>();
         for (TrainingUser tr : trs) {
             arr.add(TrainingUserDTO.create(tr));
