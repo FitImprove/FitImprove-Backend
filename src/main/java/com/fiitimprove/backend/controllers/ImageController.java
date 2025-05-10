@@ -28,26 +28,28 @@ public class ImageController {
         this.imgService = imgService;
     }
 
-    @GetMapping("/descriptors/{userId}")
+    @GetMapping("/descriptors")
     @Operation(summary = "Get image descriptors for a user", description = "Retrieves image descriptors for a specified user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Image descriptors retrieved successfully"),
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<List<PubImageDTO>> getImageDescriptors(@PathVariable Long userId) throws Exception {
-        return ResponseEntity.ok(imgService.getUserImages(userId));
+    public ResponseEntity<List<PubImageDTO>> getImageDescriptors() throws Exception {
+        Long currentUserId = securityUtil.getCurrentUserId();
+        return ResponseEntity.ok(imgService.getUserImages(currentUserId));
     }
 
-    @GetMapping("/files/{userId}")
+    @GetMapping("/files")
     @Operation(summary = "Get image files for a user", description = "Retrieves image files for a specified user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Image files retrieved successfully"),
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<List<ImageFileDTO>> getImages(@PathVariable Long userId) throws Exception {
-        return ResponseEntity.ok(imgService.getUserImageFiles(userId));
+    public ResponseEntity<List<ImageFileDTO>> getImages() throws Exception {
+        Long currentUserId = securityUtil.getCurrentUserId();
+        return ResponseEntity.ok(imgService.getUserImageFiles(currentUserId));
     }
 
     @GetMapping("/get/{filename}")
@@ -61,7 +63,7 @@ public class ImageController {
         return ResponseEntity.ok(imgService.getImage(filename));
     }
 
-    @PostMapping("/upload/{userId}")
+    @PostMapping("/upload")
     @Operation(summary = "Upload an image for a user", description = "Uploads an image for a specified user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Image uploaded successfully"),
@@ -70,17 +72,14 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     public ResponseEntity<?> uploadImage(
-            @PathVariable Long userId,
             @RequestParam("file") MultipartFile file) throws Exception {
         Long currentUserId = securityUtil.getCurrentUserId();
-        if (!currentUserId.equals(userId)) {
-            throw new AccessDeniedException("You can only upload your own profile");
-        }
-        Image saved = imgService.saveImage(userId, file);
+
+        Image saved = imgService.saveImage(currentUserId, file);
         return ResponseEntity.ok(PubImageDTO.create(saved));
     }
 
-    @DeleteMapping("/del/{userId}/{imgId}")
+    @DeleteMapping("/del/{imgId}")
     @Operation(summary = "Delete an image", description = "Deletes an image for a specified user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Image deleted successfully"),
@@ -88,13 +87,11 @@ public class ImageController {
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "User or image not found")
     })
-    public ResponseEntity<?> deleteImage(@PathVariable("userId") Long userId,
+    public ResponseEntity<?> deleteImage(
                                          @PathVariable("imgId") Long imgId) throws Exception {
         Long currentUserId = securityUtil.getCurrentUserId();
-        if (!currentUserId.equals(userId)) {
-            throw new AccessDeniedException("You can only delete your own images");
-        }
-        imgService.deleteImage(userId, imgId);
+
+        imgService.deleteImage(currentUserId, imgId);
         return ResponseEntity.ok(null);
     }
 }

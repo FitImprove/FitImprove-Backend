@@ -10,6 +10,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -28,11 +32,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/users/signup",
                                 "/api/password/**",
-                                "/api/images/get/{filename}",
-                                "/api/images/files/{userId}",
-                                "/api/images/descriptors/{userId}",
                                 "/api/users/signIn",
-                                "api/users/getAll"
+                                "api/users/getAll",
+                                "/ws/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/settings/update",
@@ -41,9 +43,14 @@ public class SecurityConfig {
                                 "/api/users/user",
                                 "/api/users/update",
                                 "/api/chats/create",
-                                "/api/chats/coach/{coach_id}",
-                                "/api/chats/user/{regularUserId}",
-                                "/api/users/notifications"
+                                "/api/chats/coach",
+                                "/api/chats/user",
+                                "/api/users/notifications",
+                                "/api/images/files",
+                                "/api/images/upload",
+                                "/api/images/descriptors",
+                                "/api/images/get/{filename}",
+                                "/api/images/del/{imgId}"
                         ).authenticated()
                         .anyRequest().permitAll()
                 )
