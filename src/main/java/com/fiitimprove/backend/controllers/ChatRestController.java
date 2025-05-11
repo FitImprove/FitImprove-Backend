@@ -27,6 +27,11 @@ public class ChatRestController {
         List<MessageDTO> messages = chatService.getChatMessages(chatId);
         return ResponseEntity.ok(messages);
     }
+    @GetMapping("/{chatId}")
+    public ResponseEntity<Chat> getChatInfo(@PathVariable Long chatId) {
+        Chat chat = chatService.findChatById(chatId);
+        return ResponseEntity.ok(chat);
+    }
     @PostMapping("/create")
     @Operation(summary = "Create a chat", description = "Creates a chat between a coach and a regular user")
     @ApiResponses(value = {
@@ -35,12 +40,10 @@ public class ChatRestController {
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Coach or user not found")
     })
-    public ResponseEntity<Chat> createChat(@RequestParam Long coachId, @RequestParam Long regularUserId) {
+    public ResponseEntity<Chat> createChat(@RequestParam Long coachId) {
+        System.out.println("si=om tu");
         Long currentUserId = securityUtil.getCurrentUserId();
-        if (!currentUserId.equals(regularUserId)) {
-            throw new AccessDeniedException("Only the regular user can create the chat");
-        }
-        return ResponseEntity.ok(chatService.createChat(coachId, regularUserId));
+        return ResponseEntity.ok(chatService.createChat(coachId, currentUserId));
     }
 
     @GetMapping("/coach")
@@ -70,5 +73,24 @@ public class ChatRestController {
 
         return ResponseEntity.ok(chatService.findChatsByRegularUserId(currentUserId));
     }
-
+    @GetMapping("/exists")
+    @Operation(summary = "Check if chat exists", description = "Checks if a chat exists between the specified coach and user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Chat existence checked successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters: at least one of coachId or userId must be provided"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "Coach or user not found")
+    })
+    public ResponseEntity<Boolean> checkChatExists(
+            @RequestParam(required = false) Long coachId,
+            @RequestParam(required = false) Long userId
+    ) {
+        if (coachId == null && userId == null) {
+            return ResponseEntity.badRequest().body(false);
+        }
+        Long currentUserId = securityUtil.getCurrentUserId();
+        boolean exists = chatService.checkChatExists(coachId, userId, currentUserId);
+        return ResponseEntity.ok(exists);
+    }
 }

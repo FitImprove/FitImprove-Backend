@@ -45,15 +45,18 @@ public class SecurityConfig {
                                 "/api/chats/create",
                                 "/api/chats/coach",
                                 "/api/chats/user",
+                                "/api/chats/{chatId}",
                                 "/api/users/notifications",
                                 "/api/images/files",
                                 "/api/images/upload",
                                 "/api/images/descriptors",
+                                "/api/images/descriptors/{userId}",
                                 "/api/images/get/{filename}",
                                 "/api/images/del/{imgId}",
                                 "/api/notification/**",
                                 "/api/training-users/**",
-                                "/api/trainings/**"
+                                "/api/trainings/**",
+                                "/api/users/{userId}"
                         ).authenticated()
                         .anyRequest().permitAll()
                 )

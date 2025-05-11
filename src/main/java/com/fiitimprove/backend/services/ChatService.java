@@ -105,9 +105,10 @@ public class ChatService {
         //messagingTemplate.convertAndSend("/topic/chat/" + message.getChat().getId(), messageDTO);
     }
     public Chat createChat(Long coachId, Long regularUserId) {
-        // Перевіряємо, чи існує чат між цими користувачами
+
         Optional<Chat> existingChat = chatRepository.findByCoachIdAndRegularUserId(coachId, regularUserId);
         if (existingChat.isPresent()) {
+            System.out.println("chat already exist");
             return existingChat.get();
         }
         Coach coach = coachRepository.findById(coachId)
@@ -137,4 +138,18 @@ public class ChatService {
                 .orElseThrow(() -> new RuntimeException("Chat not found with id: " + chatId));
     }
 
+
+    public boolean checkChatExists(Long coachId, Long userId, Long currentUserId) {
+        List<Chat> chats;
+        if (coachId != null && userId == null) {
+
+            chats = findChatsByRegularUserId(currentUserId);
+            return chats.stream().anyMatch(chat -> chat.getCoach().getId().equals(coachId));
+        } else if (userId != null && coachId == null) {
+
+            chats = findChatsByCoachId(currentUserId);
+            return chats.stream().anyMatch(chat -> chat.getRegularUser().getId().equals(userId));
+        }
+        return false;
+    }
 }

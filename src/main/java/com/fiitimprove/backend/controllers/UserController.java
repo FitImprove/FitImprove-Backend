@@ -103,6 +103,28 @@ public class UserController {
                     .body("Failed to get user data: " + ex.getMessage());
         }
     }
+    @GetMapping("/{userId}")
+    @Operation(summary = "Get authenticated user data", description = "Returns the data of the currently authenticated user. Requires a valid JWT token in the Authorization header.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User data retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class)))
+    })
+    public ResponseEntity<?> getAccurateUser(@PathVariable Long userId) {
+        try {
+           securityUtil.getCurrentUserId();
+           return ResponseEntity.ok(userService.findById(userId));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Failed to get user data: " + ex.getMessage());
+        }
+    }
 
     @PutMapping("/update")
     @Operation(summary = "Update user profile", description = "Updates the profile of the authenticated user. Only the user can update their own profile. Requires a valid JWT token in the Authorization header.")

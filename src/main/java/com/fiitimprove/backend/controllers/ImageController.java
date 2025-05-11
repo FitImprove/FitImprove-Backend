@@ -39,6 +39,17 @@ public class ImageController {
         Long currentUserId = securityUtil.getCurrentUserId();
         return ResponseEntity.ok(imgService.getUserImages(currentUserId));
     }
+    @GetMapping("/descriptors/{userId}")
+    @Operation(summary = "Get image descriptors for a specific user", description = "Retrieves image descriptors for a user by their ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Image descriptors retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<List<PubImageDTO>> getImageDescriptorsByUserId(@PathVariable Long userId) throws Exception {
+        Long currentUserId = securityUtil.getCurrentUserId();
+        return ResponseEntity.ok(imgService.getUserImages(userId));
+    }
 
     @GetMapping("/files")
     @Operation(summary = "Get image files for a user", description = "Retrieves image files for a specified user")

@@ -124,6 +124,10 @@ public class UserService {
         user.setPushtoken(request.isNotificationsEnabled() ? request.getExpoPushToken() : null);
         userRepository.save(user);
     }
+    public User findById(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with ID " + userId + " not found"));
+    }
     public List<User> findAll() {
         return userRepository.findAll();
     }
