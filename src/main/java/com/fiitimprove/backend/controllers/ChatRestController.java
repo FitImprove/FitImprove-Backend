@@ -32,19 +32,49 @@ public class ChatRestController {
         Chat chat = chatService.findChatById(chatId);
         return ResponseEntity.ok(chat);
     }
-    @PostMapping("/create")
-    @Operation(summary = "Create a chat", description = "Creates a chat between a coach and a regular user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Chat created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid coach or user ID"),
-            @ApiResponse(responseCode = "403", description = "Access denied"),
-            @ApiResponse(responseCode = "404", description = "Coach or user not found")
-    })
-    public ResponseEntity<Chat> createChat(@RequestParam Long coachId) {
-        System.out.println("si=om tu");
-        Long currentUserId = securityUtil.getCurrentUserId();
+//    @PostMapping("/create")
+//    @Operation(summary = "Create a chat", description = "Creates a chat between a coach and a regular user")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Chat created successfully"),
+//            @ApiResponse(responseCode = "400", description = "Invalid coach or user ID"),
+//            @ApiResponse(responseCode = "403", description = "Access denied"),
+//            @ApiResponse(responseCode = "404", description = "Coach or user not found")
+//    })
+//    public ResponseEntity<Chat> createChat(@RequestParam Long coachId) {
+//        System.out.println("si=om tu");
+//        Long currentUserId = securityUtil.getCurrentUserId();
+//        return ResponseEntity.ok(chatService.createChat(coachId, currentUserId));
+//    }
+@PostMapping("/create")
+@Operation(summary = "Create a chat", description = "Creates a chat between a coach and a regular user")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Chat created successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid coach or user ID"),
+        @ApiResponse(responseCode = "403", description = "Access denied"),
+        @ApiResponse(responseCode = "404", description = "Coach or user not found")
+})
+public ResponseEntity<Chat> createChat(
+        @RequestParam(required = false) Long coachId,
+        @RequestParam(required = false) Long regularUserId) {
+    Long currentUserId = securityUtil.getCurrentUserId();
+    String currentUserRole = securityUtil.getCurrentUser().getRole();
+
+    if ("COACH".equals(currentUserRole)) {
+        if (regularUserId == null) {
+            throw new IllegalArgumentException("regularUserId is required for COACH role");
+        }
+
+        return ResponseEntity.ok(chatService.createChat(currentUserId, regularUserId));
+    } else if ("USER".equals(currentUserRole)) {
+        if (coachId == null) {
+            throw new IllegalArgumentException("coachId is required for USER role");
+        }
+
         return ResponseEntity.ok(chatService.createChat(coachId, currentUserId));
+    } else {
+        throw new IllegalArgumentException("Invalid user role: " + currentUserRole);
     }
+}
 
     @GetMapping("/coach")
     @Operation(summary = "Get chats by coach ID", description = "Retrieves all chats for a specified coach")
