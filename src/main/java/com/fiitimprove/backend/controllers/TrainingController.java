@@ -1,7 +1,7 @@
 package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.dto.PubTrainingDTO;
-import com.fiitimprove.backend.dto.PubUserDTO;
+import com.fiitimprove.backend.dto.PubUserForTrainingDTO;
 import com.fiitimprove.backend.dto.TrainingEditDTO;
 import com.fiitimprove.backend.dto.TrainingId;
 import com.fiitimprove.backend.fabric.PubUserDTOFabric;
@@ -48,6 +48,7 @@ public class TrainingController {
             @Valid @RequestBody Training training,
             @RequestParam(required = false) List<Long> invitedUserIds) throws Exception {
         Long currentUserId = securityUtil.getCurrentUserId();
+        System.out.println("Id: " + currentUserId);
         Training createdTraining = trainingService.createTraining(currentUserId, training, invitedUserIds);
         return ResponseEntity.ok(PubTrainingDTO.create(createdTraining));
     }
@@ -141,7 +142,7 @@ public class TrainingController {
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Coach not found")
     })
-    public ResponseEntity<List<PubUserDTO>> getEnrolled(@Valid @PathVariable Long trainingId) {
+    public ResponseEntity<List<PubUserForTrainingDTO>> getEnrolled(@Valid @PathVariable Long trainingId) {
         return ResponseEntity.ok(userDtoFabric.createList(trainingService.getEnrolledUsers(trainingId)));
     }
 

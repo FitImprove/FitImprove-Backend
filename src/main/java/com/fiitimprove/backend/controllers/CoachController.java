@@ -1,7 +1,9 @@
 package com.fiitimprove.backend.controllers;
 
-import com.fiitimprove.backend.dto.CoachSearchDTO;
+import com.fiitimprove.backend.dto.SearchCoachDTO;
+import com.fiitimprove.backend.fabric.SearchCoachFabric;
 import com.fiitimprove.backend.models.Coach;
+import com.fiitimprove.backend.models.User;
 import com.fiitimprove.backend.security.SecurityUtil;
 import com.fiitimprove.backend.services.CoachService;
 
@@ -20,9 +22,11 @@ public class CoachController {
     @Autowired
     private SecurityUtil securityUtil;
     private final CoachService coachService;
+    private SearchCoachFabric coachSearchFab;
 
-    public CoachController(CoachService coachService) {
+    public CoachController(CoachService coachService, SearchCoachFabric coachSearch) {
         this.coachService = coachService;
+        this.coachSearchFab = coachSearch;
     }
 
     @PostMapping("/create")
@@ -54,8 +58,12 @@ public class CoachController {
             @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
             @ApiResponse(responseCode = "403", description = "Access denied")
     })
-    public ResponseEntity<?> search(@RequestBody CoachSearchDTO data) {
+    public ResponseEntity<List<SearchCoachDTO>> search(
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) User.Gender gender,
+        @RequestParam(required = false) String field) 
+    {
         securityUtil.getCurrentUserId();
-        return ResponseEntity.ok(coachService.search(data));
+        return ResponseEntity.ok(coachSearchFab.createList(coachService.search(name, field, gender)));
     }
 }

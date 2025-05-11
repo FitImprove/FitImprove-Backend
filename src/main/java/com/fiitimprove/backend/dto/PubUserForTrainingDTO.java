@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PubUserDTO {
+public class PubUserForTrainingDTO {
     @NotNull
     private Long userId;
     @NotNull
@@ -20,7 +20,7 @@ public class PubUserDTO {
     @NotNull
     private String iconPath;
 
-    public PubUserDTO (Long userId, String userName, Long trainingId, TrainingUser.Status status, String iconPath) {
+    public PubUserForTrainingDTO (Long userId, String userName, Long trainingId, TrainingUser.Status status, String iconPath) {
         this.userId = userId;
         this.userName = userName;
         this.trainingId = trainingId;
