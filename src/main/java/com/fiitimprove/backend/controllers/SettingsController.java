@@ -38,14 +38,15 @@ public class SettingsController {
         return ResponseEntity.ok(settingsService.createSettings(userId, settings));
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user")
     @Operation(summary = "Get settings by user ID", description = "Retrieves settings for a specified user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Settings retrieved successfully"),
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "Settings or user not found")
     })
-    public ResponseEntity<Settings> getSettingsByUserId(@PathVariable Long userId) {
+    public ResponseEntity<Settings> getSettingsByUserId() {
+        Long userId = securityUtil.getCurrentUserId();
         Settings settings = settingsService.findByUserId(userId);
         if (settings == null) {
             return ResponseEntity.notFound().build();

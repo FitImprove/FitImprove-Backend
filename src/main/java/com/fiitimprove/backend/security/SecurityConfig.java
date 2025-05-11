@@ -56,7 +56,8 @@ public class SecurityConfig {
                                 "/api/notification/**",
                                 "/api/training-users/**",
                                 "/api/trainings/**",
-                                "/api/users/{userId}"
+                                "/api/users/{userId}",
+                                "/api/settings/user"
                         ).authenticated()
                         .anyRequest().permitAll()
                 )

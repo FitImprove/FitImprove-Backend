@@ -40,6 +40,6 @@ public class Settings {
 
 
     public enum Theme {
-        PURPLE, BLACK, HIGH_CONTRAST
+        PURPLE, BLACK, CONTRAST
     }
 }
