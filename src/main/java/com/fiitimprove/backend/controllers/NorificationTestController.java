@@ -1,5 +1,7 @@
 package com.fiitimprove.backend.controllers;
 
+import com.fiitimprove.backend.repositories.UserRepository;
+import com.fiitimprove.backend.requests.NotificationRequest;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +23,8 @@ public class NorificationTestController {
     private NotificationService notification;
     @Autowired
     private SecurityUtil securityUtil;
-
+    @Autowired
+    private UserRepository userRepository;
     @PostMapping("/set-token")
     public ResponseEntity<?> setToken(@RequestBody String expoToken) {
         User user = securityUtil.getCurrentUser();
@@ -35,4 +38,24 @@ public class NorificationTestController {
         notification.sendNotification(String.format("ExponentPushToken[%s]", token), "It works from back", "Some sql injection");
         return ResponseEntity.ok(null);
     }
+//    @PostMapping("/send")
+//    public ResponseEntity<?> send(@RequestBody NotificationRequest request) {
+//        User user = userRepository.findById(request.getUserId())
+//                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + request.getUserId()));
+//
+//        if (user.getPushtoken() == null) {
+//            return ResponseEntity.badRequest().body("User has disabled notifications (pushtoken is null)");
+//        }
+//        System.out.println(user.getPushtoken());
+//        System.out.println(request.getTitle());
+//        System.out.println(request.getMessage());
+//        System.out.println(String.format("ExponentPushToken[%s]", user.getPushtoken()));
+//        notification.sendNotification(
+//                user.getPushtoken(),
+//                request.getTitle(),
+//                request.getMessage()
+//        );
+//
+//        return ResponseEntity.ok("Notification sent successfully");
+//    }
 }
