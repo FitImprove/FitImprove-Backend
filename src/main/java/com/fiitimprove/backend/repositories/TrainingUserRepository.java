@@ -19,6 +19,12 @@ public interface TrainingUserRepository extends JpaRepository<TrainingUser, Long
         @Param("status") TrainingUser.Status status
     );
 
+    @Query(value = "SELECT tu.* FROM trainings t JOIN training_users tu ON tu.training_id = t.id WHERE t.time_date_and_time BETWEEN :start AND :end", nativeQuery = true)
+    List<TrainingUser> findTraininingUsersInTimePeriod(
+        @Param("start") LocalDateTime start,
+        @Param("end") LocalDateTime end
+    );
+
     @Query("SELECT tu FROM TrainingUser tu JOIN tu.training t WHERE t.id = :trainingId AND t.time >= :time AND tu.status in :status")
     List<TrainingUser> findUsersInTraining(
         @Param("trainingId") Long trainingId,
@@ -26,7 +32,7 @@ public interface TrainingUserRepository extends JpaRepository<TrainingUser, Long
         @Param("status") List<TrainingUser.Status> status
     );
 
-    @Query("SELECT tu FROM TrainingUser tu WHERE tu.user.id = :userId AND (tu.invitedAt > :time OR tu.canceledAt > :time OR tu.bookedAt > :time)")
+    @Query("SELECT tu FROM TrainingUser tu WHERE tu.user.id = :userId AND (tu.invitedAt > :time OR tu.canceledAt > :time)") // OR tu.bookedAt > :time
     List<TrainingUser> getUpdates(
         @Param("userId") Long userId,
         @Param("time") LocalDateTime time

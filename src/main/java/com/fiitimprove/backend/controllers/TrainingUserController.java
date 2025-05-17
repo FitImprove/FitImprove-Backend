@@ -129,12 +129,19 @@ public class TrainingUserController {
     public ResponseEntity<List<TrainingUserDTO>> getAttendance(
             @PathVariable LocalDateTime start,
             @PathVariable LocalDateTime end) {
-        System.out.println("End: " + end + " Start " + start);
         Long userId = securityUtil.getCurrentUserId();
         return ResponseEntity.ok(trainingUserService.getAttendedTrainings(userId, start, end));
     }
 
     @GetMapping("/updates")
+    @Operation(summary = "Returns TrainingUser entries that were updated", description = "Retrieves a list TrainignUser entries that were updated since time :time. Is made for regular user only")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of attended trainings retrieved successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid date range"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     public ResponseEntity<List<TrainingUserDTO>> getUpdates(@RequestParam LocalDateTime time) {
         Long currentUserId = securityUtil.getCurrentUserId();
         return ResponseEntity.ok(trainingUserService.getUpdates(currentUserId, time));

@@ -51,7 +51,7 @@ public class CoachController {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "Search for coaches", description = "Searches for coaches based on the provided criteria")
+    @Operation(summary = "Search for coaches based on name, gender and field. If some input is empty then it is not used", description = "Searches for coaches based on the provided criteria")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of matching coaches retrieved successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid search criteria provided"),

@@ -63,7 +63,6 @@ public class TrainingController {
             @ApiResponse(responseCode = "404", description = "Training not found")
     })
     public ResponseEntity<Training> cancelTraining(@Valid @RequestBody TrainingId trainingId) throws Exception {
-        Long currentUserId = securityUtil.getCurrentUserId();
         Training tr = trainingService.cancel(trainingId.getTrainingId());
         return ResponseEntity.ok(tr);
     }
@@ -78,8 +77,6 @@ public class TrainingController {
             @ApiResponse(responseCode = "404", description = "Training not found")
     })
     public ResponseEntity<PubTrainingDTO> edit(@RequestBody @Valid TrainingEditDTO data) {
-        System.out.println("Data received for eddit: " + data.getForType());
-        Long currentUserId = securityUtil.getCurrentUserId();
         Training t = trainingService.edit(data);
         return ResponseEntity.ok(PubTrainingDTO.create(t));
     }
@@ -102,7 +99,6 @@ public class TrainingController {
             @ApiResponse(responseCode = "404", description = "Training not found")
     })
     public ResponseEntity<List<PubTrainingDTO>> getAvailableTrainings(@Valid @PathVariable Long coachId) throws Exception {
-        Long currentUserId = securityUtil.getCurrentUserId();
         return ResponseEntity.ok(trainingService.getAvailableTrainings(coachId));
     }
 
@@ -147,19 +143,38 @@ public class TrainingController {
     }
 
     @GetMapping("/updates")
+    @Operation(summary = "Returns updated trainings for regular user", description = "Returns a list of trainings that were created/change in the time since :time")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of trainings retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "Coach not found")
+    })
     public ResponseEntity<List<PubTrainingDTO>> getUpdatesRegularUser(@RequestParam LocalDateTime time) {
         Long currentUserId = securityUtil.getCurrentUserId();
-        System.err.printf("Update called for user: %d\n", currentUserId);
         return ResponseEntity.ok(trainingService.getUpdatesRegularUser(currentUserId, time));
     }
     @GetMapping("/updates-coach")
+    @Operation(summary = "Returns updated trainings for coach", description = "Returns a list of trainings that were created/change in the time since :time")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of trainings retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "Coach not found")
+    })
     public ResponseEntity<List<PubTrainingDTO>> getUpdatesCoach(@RequestParam LocalDateTime time) {
         Long currentUserId = securityUtil.getCurrentUserId();
-        System.err.printf("Update called for user: %d\n", currentUserId);
         return ResponseEntity.ok(trainingService.getUpdatesCoach(currentUserId, time));
     }
 
     @GetMapping("/all-trainings-coach")
+    @Operation(summary = "Returns all trainings that coach had/will have", description = "Returns a list of trainings that coach has ever had or will have")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of trainings retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid or missing token"),
+            @ApiResponse(responseCode = "403", description = "Access denied"),
+            @ApiResponse(responseCode = "404", description = "Coach not found")
+    })    
     public ResponseEntity<List<PubTrainingDTO>> getAllForCoach() {
         Long currentUserId = securityUtil.getCurrentUserId();
         return ResponseEntity.ok(PubTrainingDTO.createList(trainingService.getAllForCoach(currentUserId)));

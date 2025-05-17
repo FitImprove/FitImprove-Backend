@@ -4,10 +4,8 @@ import com.fiitimprove.backend.models.Coach;
 import com.fiitimprove.backend.models.RegularUser;
 import com.fiitimprove.backend.models.Settings;
 import com.fiitimprove.backend.models.User;
-import com.fiitimprove.backend.repositories.SettingsRepository;
 import com.fiitimprove.backend.repositories.UserRepository;
 import com.fiitimprove.backend.requests.NotificationUpdateRequest;
-import com.fiitimprove.backend.requests.SettingsUpdateRequest;
 import com.fiitimprove.backend.requests.UserUpdateProfileRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,10 +21,6 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private SettingsService settingsService;
-    @Autowired
-    private SettingsRepository settingsRepository;
-    @Autowired
-    private JwtService jwtService;
     @Autowired
     private PasswordEncoder passwordEncoder;
     private boolean emailExists(String email) {

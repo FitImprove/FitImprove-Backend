@@ -2,7 +2,6 @@ package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.dto.ImageFileDTO;
 import com.fiitimprove.backend.dto.PubImageDTO;
-import com.fiitimprove.backend.exceptions.AccessDeniedException;
 import com.fiitimprove.backend.models.Image;
 import com.fiitimprove.backend.security.SecurityUtil;
 import com.fiitimprove.backend.services.ImageService;
@@ -47,12 +46,11 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     public ResponseEntity<List<PubImageDTO>> getImageDescriptorsByUserId(@PathVariable Long userId) throws Exception {
-        Long currentUserId = securityUtil.getCurrentUserId();
         return ResponseEntity.ok(imgService.getUserImages(userId));
     }
 
     @GetMapping("/files")
-    @Operation(summary = "Get image files for a user", description = "Retrieves image files for a specified user")
+    @Operation(summary = "Get image files for a user, returns ", description = "Retrieves image files for a specified user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Image files retrieved successfully"),
             @ApiResponse(responseCode = "403", description = "Access denied"),
@@ -64,7 +62,7 @@ public class ImageController {
     }
 
     @GetMapping("/get/{filename}")
-    @Operation(summary = "Get an image by filename", description = "Retrieves an image by its filename")
+    @Operation(summary = "Returns an image from an internal storage by path", description = "Retrieves an image by its filename")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Image retrieved successfully"),
             @ApiResponse(responseCode = "403", description = "Access denied"),

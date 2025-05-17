@@ -10,9 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -37,7 +34,6 @@ public class SecurityConfig {
                                 "/ws/**"
                         ).permitAll()
                         .requestMatchers(
-                                "/api/settings/update",
                                 "/api/gyms/update",
                                 "/api/gyms/delete/{coach_id}",
                                 "/api/users/user",
@@ -57,7 +53,7 @@ public class SecurityConfig {
                                 "/api/training-users/**",
                                 "/api/trainings/**",
                                 "/api/users/{userId}",
-                                "/api/settings/user"
+                                "/api/settings/**"
                         ).authenticated()
                         .anyRequest().permitAll()
                 )

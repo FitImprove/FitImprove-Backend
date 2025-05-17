@@ -1,21 +1,16 @@
 package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.dto.PasswordResetDto;
-import com.fiitimprove.backend.security.SecurityUtil;
 import com.fiitimprove.backend.services.PasswordRecoveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/password")
 public class PasswordRecoveryController {
-
-    @Autowired
-    private SecurityUtil securityUtil;
     private final PasswordRecoveryService passRecover;
 
     public PasswordRecoveryController(PasswordRecoveryService passRecover) {
@@ -23,20 +18,19 @@ public class PasswordRecoveryController {
     }
 
     @PostMapping("/recover/{email}")
-    @Operation(summary = "Initiate password recovery", description = "Sends a password recovery email to the specified email address")
+    @Operation(summary = "Initiate password recovery, by sending a recovery email to the user's email", description = "Sends a password recovery email to the specified email address")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Recovery email sent successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid email"),
             @ApiResponse(responseCode = "404", description = "User with this email not found")
     })
     public ResponseEntity<?> passwordRecover(@PathVariable("email") String email) {
-        System.out.println("hii, i am in recover");
         passRecover.create(email);
         return ResponseEntity.ok("Mail was sent to your email");
     }
 
     @PostMapping("/check-code/{token}")
-    @Operation(summary = "Check password recovery token", description = "Verifies the password recovery token")
+    @Operation(summary = "Check weather the password recovery token is valid, without any side effects", description = "Verifies the password recovery token")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Token is valid"),
             @ApiResponse(responseCode = "400", description = "Invalid token"),

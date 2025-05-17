@@ -84,15 +84,13 @@ public class NotificationService {
         });
     }
 
-    public void sendTrainingReminder(List<User> users, Training train) {
-        for (User user : users) {
-            String token = user.getPushtoken();
-            if (token != null) {
-                long timeDiff = Duration.between(LocalDateTime.now(), train.getTime()).toMinutes();
-                CompletableFuture.runAsync(() -> {
-                    sendNotification(token, "Upcoming training", String.format("Training \"%s\" is coming up in %ld, dont miss it", train.getTitle(), timeDiff));
-                });
-            }
+    public void sendTrainingReminder(User user, Training train) {
+        String token = user.getPushtoken();
+        if (token != null) {
+            long timeDiff = Duration.between(LocalDateTime.now(), train.getTime()).toMinutes();
+            CompletableFuture.runAsync(() -> {
+                sendNotification(token, "Upcoming training", String.format("Training \"%s\" is coming up in %ld, dont miss it", train.getTitle(), timeDiff));
+            });
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.fiitimprove.backend.controllers;
 
-import com.fiitimprove.backend.exceptions.AccessDeniedException;
 import com.fiitimprove.backend.models.Settings;
 import com.fiitimprove.backend.requests.SettingsUpdateRequest;
 import com.fiitimprove.backend.security.SecurityUtil;
@@ -26,7 +25,7 @@ public class SettingsController {
         this.securityUtil = securityUtil;
     }
 
-    @PostMapping("/create/{userId}")
+    @PostMapping("/create")
     @Operation(summary = "Create settings for a user", description = "Creates settings for a specified user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Settings created successfully"),
@@ -34,7 +33,8 @@ public class SettingsController {
             @ApiResponse(responseCode = "403", description = "Access denied"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<Settings> createSettings(@PathVariable Long userId, @Valid @RequestBody Settings settings) {
+    public ResponseEntity<Settings> createSettings(@Valid @RequestBody Settings settings) {
+        Long userId = securityUtil.getCurrentUserId();
         return ResponseEntity.ok(settingsService.createSettings(userId, settings));
     }
 

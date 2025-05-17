@@ -2,7 +2,6 @@ package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.dto.AuthentificationResponse;
 import com.fiitimprove.backend.exceptions.AccessDeniedException;
-import com.fiitimprove.backend.repositories.UserRepository;
 import com.fiitimprove.backend.requests.NotificationUpdateRequest;
 import com.fiitimprove.backend.requests.SignInRequest;
 import com.fiitimprove.backend.models.User;
@@ -11,7 +10,6 @@ import com.fiitimprove.backend.security.SecurityUtil;
 import com.fiitimprove.backend.services.JwtService;
 import com.fiitimprove.backend.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,8 +18,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,9 +49,7 @@ public class UserController {
         try {
             User crUser = userService.signup(user);
             System.out.println(crUser.toString());
-            System.out.println("hi2");
             AuthentificationResponse authentificationResponse = jwtService.signUp(crUser);
-            System.out.println("hi3");
             return ResponseEntity.ok(authentificationResponse);
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
@@ -151,15 +145,8 @@ public class UserController {
     public ResponseEntity<?> updateUser(
             @RequestBody UserUpdateProfileRequest updateRequest) {
         try {
-            System.out.println("som tu");
-
             Long currentUserId = securityUtil.getCurrentUserId();
-            /*if (!currentUserId.equals(id)) {
-                throw new AccessDeniedException("You can only update your own profile");
-            }*/
-            System.out.println("som tu" + currentUserId + " " + updateRequest);
             User updatedUser = userService.updateUser(currentUserId, updateRequest);
-            System.out.println("u4");
             return ResponseEntity.ok(updatedUser);
         } catch (AccessDeniedException ex) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -196,5 +183,4 @@ public class UserController {
                     .body("An error occurred while updating notifications: " + ex.getMessage());
         }
     }
-
 }
