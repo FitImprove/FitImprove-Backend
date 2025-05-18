@@ -13,11 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Handles endpoints related to settigns, creation, requesting
+ */
 @RestController
 @RequestMapping("/api/settings")
 public class SettingsController {
-
-
     private final SettingsService settingsService;
     private final SecurityUtil securityUtil;
     public SettingsController(SettingsService settingsService, SecurityUtil securityUtil) {

@@ -9,6 +9,9 @@ import com.fiitimprove.backend.models.Training;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO for public training information
+ */
 @Getter
 @Setter
 public class PubTrainingDTO {

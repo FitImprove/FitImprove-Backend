@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO that stores information sent by user for password recovery
+ */
 @Getter
 @Setter
 public class PasswordResetDto {

@@ -3,6 +3,9 @@ package com.fiitimprove.backend.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+/**
+ * DTO for authentication response
+ */
 @Getter
 @Setter
 @Data

@@ -11,6 +11,10 @@ import com.fiitimprove.backend.models.TrainingUser;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * This class is responsible for running backround task 
+ * that sends push notifications to users with remained of upcoming trainings
+ */
 @Component
 public class Background {
     private LocalDateTime lastUpdateTime = LocalDateTime.now();

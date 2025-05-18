@@ -16,12 +16,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * WebSocket handler that manages real-time chat messaging between clients' applications
+ */
 @Component
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     private final Map<Long, Map<String, WebSocketSession>> chatSessions = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper;
     private final MessageService messageService;
+
+    /**
+     * Constructs a new ChatWebSocketHandler with the provided {@link MessageService}.
+     * Initializes the {@link ObjectMapper} with support for Java 8 date/time types.
+     *
+     * @param messageService the service used to save chat messages
+     */
     public ChatWebSocketHandler(MessageService messageService) {
         this.objectMapper = new ObjectMapper();
         JavaTimeModule module = new JavaTimeModule();
@@ -29,6 +39,14 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         this.objectMapper.registerModule(module);
         this.messageService = messageService;
     }
+
+    /**
+     * Called when a new WebSocket connection is established.
+     * Extracts the chat ID from the session URI and adds the session to the chatSessions map.
+     *
+     * @param session the new WebSocket session
+     * @throws Exception if an error occurs while processing the connection
+     */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String chatId = extractChatId(session);
@@ -40,6 +58,16 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    /**
+     * Handles incoming text messages from clients.
+     * Deserializes the message JSON into {@link MessageDTO}, sets timestamps and read status,
+     * saves it via {@link MessageService}, and broadcasts the saved message to all sessions
+     * connected to the same chat.
+     *
+     * @param session the WebSocket session that sent the message
+     * @param message the incoming text message
+     * @throws Exception if an error occurs during message handling
+     */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String chatId = extractChatId(session);
@@ -65,6 +93,15 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             }
         }
     }
+
+    /**
+     * Called when a WebSocket connection is closed.
+     * Removes the session from the chatSessions map and cleans up if no sessions remain for the chat.
+     *
+     * @param session the WebSocket session that was closed
+     * @param status the status of the connection close
+     * @throws Exception if an error occurs during disconnection handling
+     */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         String chatId = extractChatId(session);
@@ -80,6 +117,14 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             System.out.println("Disconnected from chat " + parsedChatId + ", session: " + session.getId());
         }
     }
+    
+    /**
+     * Extracts the chat ID from the WebSocket session URI.
+     * Assumes the URI contains "/ws/chat/{chatId}".
+     *
+     * @param session the WebSocket session
+     * @return the chat ID string if found, or null otherwise
+     */
     private String extractChatId(WebSocketSession session) {
         String uri = session.getUri().toString();
         String[] parts = uri.split("/ws/chat/");

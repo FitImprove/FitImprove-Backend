@@ -17,8 +17,15 @@ import java.security.Key;
 import java.util.Date;
 import java.util.Optional;
 
+/**
+ * Service class responsible for handling JWT-based authentication,
+ * including token creation, validation, and user extraction from token.
+ */
 @Service
 public class JwtService {
+    /**
+     * Secret key used for signing JWT tokens, configured via application properties.
+     */
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -28,11 +35,23 @@ public class JwtService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Generates a JWT token for the given user and returns authentication response.
+     *
+     * @param user The user to generate token for.
+     * @return Authentication response containing user info and token.
+     */
     public AuthentificationResponse signUp(User user) {
         String accessToken = generateAccessToken(user.getId());
         return new AuthentificationResponse(user.getId(), user.getName(), user.getRole(), accessToken);
     }
 
+    /**
+     * Generates a JWT access token for the specified user ID.
+     *
+     * @param userId The ID of the user.
+     * @return Signed JWT token.
+     */
     public String generateAccessToken(Long userId) {
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
@@ -43,6 +62,13 @@ public class JwtService {
                 .compact();
     }
 
+    /**
+     * Authenticates a user based on email and password, then returns authentication response.
+     *
+     * @param signInRequest Object containing email and password.
+     * @return Authentication response containing user info and JWT token.
+     * @throws IllegalArgumentException If email is not found or password is incorrect.
+     */
     public AuthentificationResponse signIn(SignInRequest signInRequest) {
         User user = userRepository.findByEmail(signInRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User with this email does not exist"));
@@ -53,8 +79,13 @@ public class JwtService {
         return new AuthentificationResponse(user.getId(), user.getName(), user.getRole(), accessToken);
     }
 
-
-
+    /**
+     * Extracts user ID from the given JWT token after verifying its validity and expiration.
+     *
+     * @param token JWT token.
+     * @return User ID extracted from token.
+     * @throws IllegalArgumentException If token is invalid or expired.
+     */
     public Long extractUserId(String token) {
         Claims claims = parseToken(token);
         if (claims == null) {
@@ -66,12 +97,24 @@ public class JwtService {
         return Long.parseLong(claims.getSubject());
     }
 
-
+    /**
+     * Checks whether the given token claims indicate an expired token.
+     *
+     * @param claims JWT claims.
+     * @return True if the token is expired, false otherwise.
+     */
     public boolean isTokenExpired(Claims claims) {
         Date expiration = claims.getExpiration();
         return expiration.before(new Date());
     }
 
+    /**
+     * Retrieves the full user data from a valid JWT token.
+     *
+     * @param token JWT token.
+     * @return User corresponding to the token.
+     * @throws Exception If token is invalid, expired, or user not found.
+     */
     public User getUserData(String token) throws Exception {
         Claims claims = parseToken(token);
         if (claims == null) {
@@ -89,6 +132,12 @@ public class JwtService {
         return userOptional.get();
     }
 
+    /**
+     * Parses the JWT token and returns its claims.
+     *
+     * @param token JWT token.
+     * @return Claims object if parsing succeeds; otherwise null.
+     */
     public Claims parseToken(String token) {
         try {
             Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));

@@ -12,10 +12,12 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Handles endpoints related to gym creation, setting and requesting an address
+ */
 @RestController
 @RequestMapping("/api/gyms")
 public class GymController {
-
     private final GymService gymService;
     private final SecurityUtil securityUtil;
     public GymController(GymService gymService, SecurityUtil securityUtil) {

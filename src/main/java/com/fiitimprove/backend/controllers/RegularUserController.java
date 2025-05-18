@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Handles endpoints related to regular user acount creation
+ */
 @RestController
 @RequestMapping("/api/regular-users")
 public class RegularUserController {

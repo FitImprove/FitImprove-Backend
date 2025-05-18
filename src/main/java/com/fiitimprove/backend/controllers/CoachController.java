@@ -16,6 +16,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Handles endpoints related to coach creating and search
+ */
 @RestController
 @RequestMapping("/api/coaches")
 public class CoachController {

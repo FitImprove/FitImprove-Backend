@@ -1,5 +1,6 @@
 package com.fiitimprove.backend.services;
 
+import com.fiitimprove.backend.exceptions.IncorrectDataException;
 import com.fiitimprove.backend.models.Coach;
 import com.fiitimprove.backend.models.RegularUser;
 import com.fiitimprove.backend.models.Settings;
@@ -14,6 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Service class for managing users including registration, updating profiles, and notification settings.
+ * Supports both {@link Coach} and {@link RegularUser} user types.
+ */
 @Service
 public class UserService {
 
@@ -23,21 +28,35 @@ public class UserService {
     private SettingsService settingsService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    /**
+     * Checks if an email is already registered in the system.
+     *
+     * @param email the email address to check
+     * @return true if the email already exists, false otherwise
+     */
     private boolean emailExists(String email) {
         return  userRepository.findByEmail(email).isPresent();
     }
+
+    /**
+     * Registers a new user (Coach or RegularUser) with default settings.
+     * Password is hashed before saving.
+     *
+     * @param user the user to register
+     * @return the saved user with assigned settings
+     * @throws IncorrectDataException if user type is invalid or email already exists
+     */
     @Transactional
     public User signup(User user) {
-        System.out.println(user.getRole() + user.getName());
         if (!(user instanceof Coach) && !(user instanceof RegularUser)) {
-            throw new IllegalArgumentException("User must be of type Coach or RegularUser");
+            throw new IncorrectDataException("User must be of type Coach or RegularUser");
         }
         if (emailExists(user.getEmail())) {
-            throw new IllegalArgumentException("This email has already exist");
+            throw new IncorrectDataException("This email has already exist");
         }
         user.hashPassword(passwordEncoder);
         User u = userRepository.save(user);
-        System.out.println("hhhhii");
         Settings settings = new Settings();
         settings.setUser(u);
         settings.setTheme(Settings.Theme.PURPLE);
@@ -46,15 +65,21 @@ public class UserService {
         settingsService.createSettings(u.getId(), settings);
         u.setSettings(settings);
         u = userRepository.save(u);
-        System.out.println("hhhhii2");
         return u;
     }
+
+    /**
+     * Updates an existing user's profile information.
+     * Supports general user fields and additional fields for Coaches.
+     *
+     * @param userId        the ID of the user to update
+     * @param updateRequest the profile update request containing new field values
+     * @return the updated user entity
+     * @throws Exception if user not found or if username is already taken by another user
+     */
     public User updateUser(Long userId, UserUpdateProfileRequest updateRequest) throws Exception {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with ID " + userId + " not found"));
-
-        // Оновлення полів
-        //System.out.println("tu");
         if (updateRequest.getName() != null) {
             existingUser.setName(updateRequest.getName());
         }
@@ -81,8 +106,6 @@ public class UserService {
         if (updateRequest.getSelfInformation() != null) {
             existingUser.setSelfInformation(updateRequest.getSelfInformation());
         }
-       // System.out.println("tu");
-        // Оновлення полів, специфічних для Coach
         if (existingUser instanceof Coach coach) {
             if (updateRequest.getFields() != null) {
                 coach.setFields(updateRequest.getFields());
@@ -97,7 +120,6 @@ public class UserService {
                 coach.setWorksInFieldSince(updateRequest.getWorksInFieldSince());
             }
         }
-        //System.out.println("tu");
 //        if (updateRequest.getSettings() != null) {
 //            SettingsUpdateRequest settingsRequest = new SettingsUpdateRequest();
 //            settingsRequest.setTheme(updateRequest.getSettings().getTheme());
@@ -110,6 +132,15 @@ public class UserService {
         System.out.println("tu"+existingUser);
         return userRepository.save(existingUser);
     }
+
+    /**
+     * Updates the notification settings for a user.
+     * Enables or disables push notifications and updates the push token accordingly.
+     *
+     * @param userId  the ID of the user to update
+     * @param request the notification update request containing push token and enable status
+     * @throws IllegalArgumentException if the user does not exist
+     */
     @Transactional
     public void updateNotifications(Long userId, NotificationUpdateRequest request) {
         User user = userRepository.findById(userId)
@@ -118,10 +149,24 @@ public class UserService {
         user.setPushtoken(request.isNotificationsEnabled() ? request.getExpoPushToken() : null);
         userRepository.save(user);
     }
+
+    /**
+     * Finds a user by their unique ID.
+     *
+     * @param userId the user ID
+     * @return the found user
+     * @throws IllegalArgumentException if the user does not exist
+     */
     public User findById(Long userId){
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with ID " + userId + " not found"));
     }
+
+    /**
+     * Retrieves all users from the system.
+     *
+     * @return list of all users
+     */
     public List<User> findAll() {
         return userRepository.findAll();
     }

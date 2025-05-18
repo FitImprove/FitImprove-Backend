@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service for managing chat messages, including saving, sending,
+ * and retrieving messages within chats.
+ */
 @Service
 public class MessageService {
 
@@ -21,8 +25,13 @@ public class MessageService {
     @Autowired
     private ChatService chatService;
 
-
-
+    /**
+     * Saves a new message based on the provided DTO, associating it with an existing chat.
+     *
+     * @param dto Data transfer object containing message details.
+     * @return The saved message converted back to a DTO.
+     * @throws RuntimeException if the chat with the provided ID does not exist.
+     */
     public MessageDTO saveMessage(MessageDTO dto) {
         Chat chat = chatRepository.findById(dto.getChatId())
                 .orElseThrow(() -> new RuntimeException("Chat not found"));
@@ -37,6 +46,19 @@ public class MessageService {
         Message saved = messageRepository.save(message);
         return MessageConverter.toDTO(saved);
     }
+
+    /**
+     * Sends a message in a specific chat by a given sender with the specified role and content.
+     * Validates sender participation and role consistency in the chat.
+     *
+     * @param chatId     ID of the chat where the message is sent.
+     * @param senderId   ID of the sender.
+     * @param senderRole Role of the sender (COACH or USER).
+     * @param content    Content of the message.
+     * @return The saved Message entity.
+     * @throws RuntimeException if the sender is not a participant in the chat or
+     *                          if the sender's role does not match their identity in the chat.
+     */
     public Message sendMessage(Long chatId, Long senderId, Message.SenderRole senderRole, String content) {
         Chat chat = chatService.findChatById(chatId);
 
@@ -61,8 +83,13 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
+    /**
+     * Retrieves all messages belonging to a specific chat.
+     *
+     * @param chatId ID of the chat.
+     * @return List of messages associated with the chat.
+     */
     public List<Message> findMessagesByChatId(Long chatId) {
         return messageRepository.findByChatId(chatId);
     }
-
 }

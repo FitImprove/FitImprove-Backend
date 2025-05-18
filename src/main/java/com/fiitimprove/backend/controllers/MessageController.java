@@ -1,3 +1,4 @@
+
 package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.models.Message;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Handles endpoints related to messages
+ */
 @RestController
 @RequestMapping("/api/messages")
 public class MessageController {

@@ -8,6 +8,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Handles endpoints related to password recovery and tokens
+ */
 @RestController
 @RequestMapping("/api/password")
 public class PasswordRecoveryController {
@@ -41,7 +44,7 @@ public class PasswordRecoveryController {
     }
 
     @PostMapping("/set-new-password")
-    @Operation(summary = "Set new password", description = "Changes the user's password using the recovery token")
+    @Operation(summary = "Sets new user password", description = "Changes the user's password using the recovery token")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Password changed successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid token or password"),

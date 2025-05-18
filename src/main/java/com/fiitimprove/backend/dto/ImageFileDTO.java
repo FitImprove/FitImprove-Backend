@@ -2,6 +2,9 @@ package com.fiitimprove.backend.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO for returning all user's immages with id and data
+ */
 @Getter
 @Setter
 public class ImageFileDTO {

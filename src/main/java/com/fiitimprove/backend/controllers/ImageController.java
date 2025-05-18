@@ -15,6 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+/**
+ * Handles endpoints related to store and get profile image 
+ */
 @RestController
 @RequestMapping("/api/images")
 public class ImageController {

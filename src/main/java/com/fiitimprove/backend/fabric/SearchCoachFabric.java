@@ -10,6 +10,9 @@ import com.fiitimprove.backend.dto.SearchCoachDTO;
 import com.fiitimprove.backend.models.Coach;
 import com.fiitimprove.backend.repositories.ImageRepository;
 
+/**
+ * Fabric class that converts {@link Coach} into {@link SearchCoachDTO}
+ */
 @Component
 public class SearchCoachFabric {
     @Autowired

@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO that stores information for training editing
+ */
 @Getter
 @Setter
 public class TrainingEditDTO {

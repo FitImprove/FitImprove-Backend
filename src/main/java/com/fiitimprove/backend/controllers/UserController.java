@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Handles endpoints related to authentication and user information update
+ */
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "Users", description = "API for managing users and coaches")

@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Handles endpoints related to training, creation, canceling, editing, requesting
+ */
 @RestController
 @RequestMapping("/api/trainings")
 public class TrainingController {

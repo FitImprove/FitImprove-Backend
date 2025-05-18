@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Handles endpoints related to TrainingUser relatantiop, designed mostly for regular-user
+ */
 @RestController
 @RequestMapping("/api/training-users")
 public class TrainingUserController {

@@ -10,6 +10,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO for regular-user's participation in a trainings
+ */
 @Getter
 @Setter
 public class AttendanceDTO {

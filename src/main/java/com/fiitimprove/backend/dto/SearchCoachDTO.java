@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO that stores information required to make a coach search
+ */
 @Getter
 @Setter
 public class SearchCoachDTO {

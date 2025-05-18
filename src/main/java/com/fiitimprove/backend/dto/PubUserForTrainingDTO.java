@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO for {@link TrainingUser} class to requestor 
+ */
 @Getter
 @Setter
 public class PubUserForTrainingDTO {

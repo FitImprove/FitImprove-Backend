@@ -21,18 +21,36 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 
+/**
+ * Provides methods to send different types of notifications to the user, uses push token from users table.
+ * If there is no token specified message will not be sent
+ */
 @Service
 public class NotificationService {
     @Autowired
     private UserRepository userRep;
 
+    /**
+     * Api of the push notificaiton service provider
+     */
     private static final String EXPO_API_URL = "https://exp.host/--/api/v2/push/send";
 
+    /**
+     * Sets the push token to users settings, 
+     * @param expoToken push token from expo-notifications, might be null to disable notifications
+     * @param user user that will be reseiving notifications
+     */
     public void setToken(String expoToken, User user) {
         user.setPushtoken(expoToken);
         userRep.save(user);
     }
 
+    /**
+     * Basic method to send any notification
+     * @param expoPushToken push token to which mail would be sent 
+     * @param title title of the notification
+     * @param body body of the notification
+     */
     public void sendNotification(String expoPushToken, String title, String body) {
         RestTemplate restTemplate = new RestTemplate();
 
@@ -56,6 +74,10 @@ public class NotificationService {
         }
     }
 
+    /**
+     * Function to test notification
+     * @param message message that will be sent
+     */
     public void sendNewMessage(Message message) {
         User sender, receiver;
         if (message.getSenderRole() == SenderRole.COACH) {
@@ -74,6 +96,11 @@ public class NotificationService {
         });
     }
 
+    /**
+     * Wrapper sendNotification for training invitation
+     * @param user user which will receive notification
+     * @param train training about which notification will be sent
+     */
     public void sendInvitation(User user, Training train) {
         String token = user.getPushtoken();
         if (token == null) return;
@@ -84,6 +111,11 @@ public class NotificationService {
         });
     }
 
+    /**
+     * Wrapper around sendNotification that sends training remainder for user
+     * @param user user that will receive remained
+     * @param train training about whichc user will be remainded
+     */
     public void sendTrainingReminder(User user, Training train) {
         String token = user.getPushtoken();
         if (token != null) {

@@ -1,7 +1,6 @@
 package com.fiitimprove.backend.controllers;
 
 import com.fiitimprove.backend.dto.MessageDTO;
-import com.fiitimprove.backend.exceptions.AccessDeniedException;
 import com.fiitimprove.backend.models.Chat;
 import com.fiitimprove.backend.security.SecurityUtil;
 import com.fiitimprove.backend.services.ChatService;
@@ -14,10 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * This api class handles all endpoints related to chat
+ */
 @RestController
 @RequestMapping("/api/chats")
 public class ChatRestController {
-
     @Autowired
     private ChatService chatService;
     @Autowired

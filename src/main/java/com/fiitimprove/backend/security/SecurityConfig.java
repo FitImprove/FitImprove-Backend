@@ -11,6 +11,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Security configuration class for setting up Spring Security in the application.
+ * It configures endpoint access permissions, session management, CSRF protection,
+ * and integrates JWT authentication through a custom filter.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -20,6 +25,14 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    /**
+     * Configures the security filter chain for HTTP requests. Specifies which endpoints are allowed to be accessed with and without authentication
+     * @param http 
+     * @param jwtAuthenticationFilter the custom JWT filter to validate JWT tokens
+     * @return a configured
+     * @throws Exception if an error occurs while building the security chain
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http

@@ -4,6 +4,9 @@ import com.fiitimprove.backend.models.Image;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO that describes an image without the image data itself
+ */
 @Getter
 @Setter
 public class PubImageDTO {

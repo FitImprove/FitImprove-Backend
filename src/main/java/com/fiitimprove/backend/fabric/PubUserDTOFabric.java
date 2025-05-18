@@ -10,6 +10,9 @@ import com.fiitimprove.backend.dto.PubUserForTrainingDTO;
 import com.fiitimprove.backend.models.TrainingUser;
 import com.fiitimprove.backend.repositories.ImageRepository;
 
+/**
+ * Fabric class that converts {@link TrainingUser} into {@link PubUserForTrainingDTO}
+ */
 @Component
 public class PubUserDTOFabric {
     @Autowired

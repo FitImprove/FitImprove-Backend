@@ -1,11 +1,11 @@
 package com.fiitimprove.backend.dto;
 
-
-import com.fiitimprove.backend.dto.MessageDTO;
 import com.fiitimprove.backend.models.Message;
 
+/**
+ * Convertor of Message to MessageDTO
+ */
 public class MessageConverter {
-
     public static MessageDTO toDTO(Message message) {
         MessageDTO dto = new MessageDTO();
         dto.setId(message.getId());

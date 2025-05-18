@@ -5,9 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fiitimprove.backend.models.TrainingUser;
+import com.fiitimprove.backend.dto.PubTrainingDTO;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO for {@link TrainingUser} with more information compared to {@link PubTrainingDTO}
+ */
 @Getter
 @Setter
 public class TrainingUserDTO {
